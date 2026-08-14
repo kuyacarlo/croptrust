@@ -1,0 +1,87 @@
+[
+  {
+    "timestamp": "2026-06-13T04:59:26.571Z",
+    "label": "scan",
+    "total": 5,
+    "critical": 0,
+    "high": 3,
+    "medium": 0,
+    "low": 2,
+    "kev": 0,
+    "ids": [
+      "api/openeo/route.ts:62:68:SSRF",
+      "api/verification/run/route.ts:77:229:SSRF",
+      "api/verification/run/route.ts:77:83:SSRF",
+      "llm-redteam:userInputInSystem:api/ai/chat/route.ts:46",
+      "profile/page.tsx:246:143:SSRF"
+    ]
+  },
+  {
+    "timestamp": "2026-06-13T05:04:16.820Z",
+    "label": "scan",
+    "total": 5,
+    "critical": 0,
+    "high": 3,
+    "medium": 0,
+    "low": 2,
+    "kev": 0,
+    "ids": [
+      "api/openeo/route.ts:62:68:SSRF",
+      "api/verification/run/route.ts:77:229:SSRF",
+      "api/verification/run/route.ts:77:83:SSRF",
+      "llm-redteam:userInputInSystem:api/ai/chat/route.ts:46",
+      "profile/page.tsx:246:143:SSRF"
+    ]
+  },
+  {
+    "timestamp": "2026-06-13T05:21:35.424Z",
+    "label": "scan",
+    "total": 5,
+    "critical": 0,
+    "high": 3,
+    "medium": 0,
+    "low": 2,
+    "kev": 0,
+    "ids": [
+      "api/openeo/route.ts:62:68:SSRF",
+      "api/verification/run/route.ts:77:229:SSRF",
+      "api/verification/run/route.ts:77:83:SSRF",
+      "llm-redteam:userInputInSystem:api/ai/chat/route.ts:46",
+      "profile/page.tsx:246:143:SSRF"
+    ]
+  },
+  {
+    "timestamp": "2026-06-13T05:27:18.573Z",
+    "label": "scan",
+    "total": 5,
+    "critical": 0,
+    "high": 3,
+    "medium": 0,
+    "low": 2,
+    "kev": 0,
+    "ids": [
+      "api/openeo/route.ts:62:68:SSRF",
+      "api/verification/run/route.ts:77:229:SSRF",
+      "api/verification/run/route.ts:77:83:SSRF",
+      "llm-redteam:userInputInSystem:api/ai/chat/route.ts:46",
+      "profile/page.tsx:246:143:SSRF"
+    ]
+  },
+  {
+    "timestamp": "2026-06-13T05:27:57.040Z",
+    "label": "scan",
+    "total": 5,
+    "critical": 0,
+    "high": 3,
+    "medium": 0,
+    "low": 2,
+    "kev": 0,
+    "ids": [
+      "api/openeo/route.ts:62:68:SSRF",
+      "api/verification/run/route.ts:77:229:SSRF",
+      "api/verification/run/route.ts:77:83:SSRF",
+      "llm-redteam:userInputInSystem:api/ai/chat/route.ts:46",
+      "profile/page.tsx:246:143:SSRF"
+    ]
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__plugin_serena_serena__list_dir",
+      "Skill(code-review)",
+      "Bash(npm run *)",
+      "Bash(curl -I http://localhost:3000)",
+      "Bash(curl -I http://localhost:8080/health)",
+      "Bash(./node_modules/.bin/next dev *)",
+      "Bash(./node_node_modules/.bin/node server.js)",
+      "Bash(node server.js)",
+      "Bash(npm install *)",
+      "Bash(npx prisma *)",
+      "Bash(./node_modules/.bin/prisma generate *)"
+    ]
+  }
+}

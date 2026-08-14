@@ -1,0 +1,22 @@
+[workspace]
+members = ["agri_con"]
+resolver = "2"
+
+# Old contracts (crop_nft, escrow, verification) removed in favor of merged agri_con
+
+[workspace.dependencies]
+soroban-sdk = "25.0.1"
+
+[profile.release]
+opt-level = "z"
+overflow-checks = true
+debug = 0
+strip = "symbols"
+debug-assertions = false
+panic = "abort"
+codegen-units = 1
+lto = true
+
+[profile.release-with-logs]
+inherits = "release"
+debug-assertions = true

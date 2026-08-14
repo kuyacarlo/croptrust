@@ -1,0 +1,132 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: Contract
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(join(github.event.commits.*.modified, ' '), 'contracts/') ||
+      contains(join(github.event.commits.*.added, ' '), 'contracts/')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust + wasm target
+        run: |
+          rustup update stable --no-self-update
+          rustup target add wasm32v1-none
+
+      - name: Install Stellar CLI
+        run: cargo install stellar-cli --locked 2>&1 | tail -5
+
+      - name: Build
+        run: cargo build --release --target wasm32v1-none
+        working-directory: contracts
+
+      - name: Test
+        run: cargo test
+        working-directory: contracts
+
+      - name: Import Stellar identity
+        if: secrets.STELLAR_ADMIN_SECRET
+        run: |
+          echo "${{ secrets.STELLAR_ADMIN_SECRET }}" | stellar keys add ci-identity --secret-key 2>/dev/null
+          echo "Identity ready ($(stellar keys address ci-identity 2>/dev/null))"
+
+      - name: Deploy to testnet
+        if: secrets.STELLAR_ADMIN_SECRET
+        run: IDENTITY=ci-identity bash deploy.sh 2>&1 | tee deploy_output.txt
+
+      - name: Extract Contract ID
+        if: secrets.STELLAR_ADMIN_SECRET
+        id: contract
+        run: |
+          CONTRACT_ID=$(grep -oP 'C[A-Z0-9]{55}' deploy_output.txt | tail -1)
+          echo "contract_id=$CONTRACT_ID" >> $GITHUB_OUTPUT
+          echo "Deployed: $CONTRACT_ID"
+
+      - uses: actions/upload-artifact@v4
+        if: secrets.STELLAR_ADMIN_SECRET
+        with:
+          name: contract-deploy
+          path: |
+            deploy_output.txt
+            contracts/agri_con/Cargo.toml
+            contracts/agri_con/src/lib.rs
+            contracts/target/wasm32v1-none/release/agri_con.wasm
+
+  vercel:
+    name: Deploy to Vercel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
+
+      - name: Install Vercel CLI
+        run: npm i -g vercel@latest
+
+      - name: Sync env vars
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          CONTRACT_ID: ${{ secrets.NEXT_PUBLIC_AGRI_CON_CONTRACT_ID }}
+          NEXT_PUBLIC_TREASURY_ADDRESS: ${{ secrets.NEXT_PUBLIC_TREASURY_ADDRESS }}
+          TREASURY_ADDRESS: ${{ secrets.TREASURY_ADDRESS }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NIM_TOKEN: ${{ secrets.NIM_TOKEN }}
+          ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY }}
+          OPENEO_CLIENT_ID: ${{ secrets.OPENEO_CLIENT_ID }}
+          OPENEO_CLIENT_SECRET: ${{ secrets.OPENEO_CLIENT_SECRET }}
+        run: |
+          sync_var() {
+            local name="$1" value="$2"
+            [ -z "$value" ] && { echo "skip  $name"; return 0; }
+            for t in production preview development; do
+              vercel env rm "$name" "$t" --yes --token="$VERCEL_TOKEN" >/dev/null 2>&1 || true
+              printf '%s' "$value" | vercel env add "$name" "$t" --token="$VERCEL_TOKEN" >/dev/null 2>&1 || true
+            done
+            echo "set   $name"
+          }
+          sync_var NEXT_PUBLIC_AGRI_CON_CONTRACT_ID "$CONTRACT_ID"
+          sync_var NEXT_PUBLIC_CROP_NFT_CONTRACT_ID "$CONTRACT_ID"
+          sync_var NEXT_PUBLIC_ESCROW_CONTRACT_ID "$CONTRACT_ID"
+          sync_var NEXT_PUBLIC_VERIFICATION_CONTRACT_ID "$CONTRACT_ID"
+          sync_var NEXT_PUBLIC_TREASURY_ADDRESS "$NEXT_PUBLIC_TREASURY_ADDRESS"
+          sync_var TREASURY_ADDRESS "$TREASURY_ADDRESS"
+          sync_var DATABASE_URL "$DATABASE_URL"
+          sync_var NIM_TOKEN "$NIM_TOKEN"
+          sync_var NVIDIA_API_KEY "$NIM_TOKEN"
+          sync_var ADMIN_SECRET_KEY "$ADMIN_SECRET_KEY"
+          sync_var OPENEO_CLIENT_ID "$OPENEO_CLIENT_ID"
+          sync_var OPENEO_CLIENT_SECRET "$OPENEO_CLIENT_SECRET"
+
+      - name: Deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+          vercel build --prod --token="$VERCEL_TOKEN"
+          vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"

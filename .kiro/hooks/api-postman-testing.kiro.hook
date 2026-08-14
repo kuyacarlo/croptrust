@@ -1,0 +1,23 @@
+{
+  "enabled": true,
+  "name": "API Postman Testing",
+  "description": "When API source or config changes, ensure a Postman collection exists and run it, reporting failures and proposing fixes.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/api/**/*.ts",
+      "lib/**/*.ts",
+      "backend/**/*.js",
+      "backend/prisma/schema.prisma",
+      "contracts/**/*.rs",
+      "package.json",
+      "backend/package.json",
+      "contracts/Cargo.toml"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "API source or configuration has been modified. Retrieve the contents of the .postman.json file. If it does not exist or is empty, create/sync the Postman collection from postman/agri-con.postman_collection.json and environment from postman/agri-con.postman_environment.json (use the Postman power once connected). If it exists, get the collection ID and run the collection, show me the results, and propose fixes for any failures."
+  }
+}

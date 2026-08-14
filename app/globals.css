@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: #f8faf6;
+  --color-foreground: #1f2937;
+  --font-sans: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+  --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  --font-mono: "SFMono-Regular", "Cascadia Code", "JetBrains Mono", monospace;
+  --color-farm-50: #f0fdf4;
+  --color-farm-100: #dcfce7;
+  --color-farm-200: #bbf7d0;
+  --color-farm-300: #86efac;
+  --color-farm-400: #4ade80;
+  --color-farm-500: #22c55e;
+  --color-farm-600: #16a34a;
+  --color-farm-700: #15803d;
+  --color-farm-800: #166534;
+  --color-farm-900: #14532d;
+  --color-farm-950: #052e16;
+  --color-harvest-50: #fffbeb;
+  --color-harvest-100: #fef3c7;
+  --color-harvest-500: #f59e0b;
+  --color-harvest-600: #d97706;
+  --color-harvest-700: #b45309;
+  --color-soil-50: #faf5f0;
+  --color-soil-100: #f5ebe0;
+  --color-soil-500: #a47148;
+  --color-soil-600: #8b5e3c;
+  --color-soil-700: #6b4423;
+  --animate-in: slide-in 200ms ease-out;
+  --animate-fade-in: fade-in 300ms ease-out;
+}
+
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans), sans-serif;
+  background-image:
+    radial-gradient(circle at top left, rgba(190,242,100,0.12), transparent 28rem),
+    radial-gradient(circle at bottom right, rgba(22,163,74,0.05), transparent 32rem),
+    linear-gradient(180deg, #f7f8f2 0%, #f4f5f1 100%);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection { background: #14532d; color: #f7fee7; }
+
+h1, h2, h3, h4 { font-family: var(--font-display), serif; font-weight: 700; }
+
+/* ---- Cards ---- */
+.card-farm {
+  @apply rounded-2xl border border-farm-200/40 bg-white shadow-sm;
+}
+
+.card-hover {
+  @apply transition duration-200 hover:border-farm-300/60 hover:shadow-md hover:-translate-y-0.5;
+}
+
+/* ---- Buttons ---- */
+.btn-primary {
+  @apply inline-flex items-center gap-2 rounded-xl bg-farm-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-farm-900/10 transition-all hover:bg-farm-800 hover:shadow-md hover:shadow-farm-900/15 active:scale-[0.97];
+}
+
+.btn-outline {
+  @apply inline-flex items-center gap-2 rounded-xl border border-stone-300 bg-white px-5 py-2.5 text-sm font-semibold text-stone-700 shadow-sm transition-all hover:border-farm-400 hover:text-farm-800 active:scale-[0.97];
+}
+
+/* ---- Badges ---- */
+.badge-buyable { @apply inline-flex items-center gap-1 rounded-full bg-farm-100 px-2.5 py-0.5 text-xs font-medium text-farm-700; }
+.badge-pending { @apply inline-flex items-center gap-1 rounded-full bg-harvest-100 px-2.5 py-0.5 text-xs font-medium text-harvest-700; }
+.badge-alert  { @apply inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-600; }
+
+/* ---- NFT Steps ---- */
+.nft-step { @apply flex items-center gap-3 rounded-xl border px-4 py-3 transition; }
+.nft-step-active { @apply border-farm-400 bg-farm-50 text-farm-800 shadow-sm; }
+.nft-step-done { @apply border-farm-200 bg-white text-farm-700; }
+.nft-step-idle { @apply border-stone-200 bg-white text-stone-400; }
+
+/* ---- Skeleton loading ---- */
+.skeleton {
+  @apply animate-pulse rounded-lg bg-stone-200;
+}
+
+/* ---- Scrollbar ---- */
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+/* ---- Transitions ---- */
+.animate-in { animation: slide-in 200ms ease-out; }
+.animate-fade-in { animation: fade-in 300ms ease-out; }
+.slide-in-from-top-2 { animation: slide-in-from-top-2 200ms ease-out; }
+
+@keyframes slide-in-from-top-2 {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}

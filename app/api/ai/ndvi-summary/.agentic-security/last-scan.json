@@ -1,0 +1,164 @@
+{
+  "scanId": "e06f892d-310d-44b4-9063-2b09f9f780ae",
+  "startedAt": "2026-06-13T08:48:34.873Z",
+  "durationMs": 827,
+  "scanned": {
+    "files": 1,
+    "lines": 0
+  },
+  "findings": [
+    {
+      "id": "6604480dd920efeb",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Timeout on Outbound HTTP Request (DoS)",
+      "cwe": "CWE-400",
+      "stride": "Denial of Service",
+      "file": "route.ts",
+      "line": 53,
+      "snippet": "const res = await nvidiaFetch(\"/chat/completions\", {",
+      "fix": {
+        "description": "Set a timeout on all outbound requests to prevent event-loop starvation from stalled upstreams.",
+        "code": "// fetch (Node 18+)\nconst resp = await fetch(url, { signal: AbortSignal.timeout(5000) });\n\n// axios\nawait axios.get(url, { timeout: 5000 });\n\n// node http\nconst req = http.get(url, cb);\nreq.setTimeout(5000, () => req.destroy());"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage",
+        "confidence": "low",
+        "narrative": "Missing Timeout on Outbound HTTP Request (DoS) on `route.ts:53` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage."
+      },
+      "parser": "LOGIC",
+      "family": null
+    }
+  ],
+  "bundles": [],
+  "routes": [],
+  "components": [],
+  "suppressedCount": 0,
+  "blastRadiusSignals": {
+    "industry": "generic",
+    "industryConfidence": "low",
+    "jurisdictions": [],
+    "controls": [],
+    "estimatedUsers": 50,
+    "revenueIndicator": "pre-revenue",
+    "hasStripe": false,
+    "hasAuth": false,
+    "hasUserTable": false,
+    "hasPII": false,
+    "hasPHI": false,
+    "hasS3": false
+  },
+  "_v3": {
+    "counterfactual": {
+      "spofControls": [],
+      "controlsDetected": 28
+    },
+    "threatModel": {
+      "summary": {
+        "assetCount": 0,
+        "boundaryCount": 0,
+        "strideCounts": {
+          "spoofing": 0,
+          "tampering": 0,
+          "repudiation": 0,
+          "informationDisclosure": 0,
+          "denialOfService": 0,
+          "elevationOfPrivilege": 0
+        }
+      },
+      "assets": [],
+      "trustBoundaries": [],
+      "stride": {
+        "spoofing": [],
+        "tampering": [],
+        "repudiation": [],
+        "informationDisclosure": [],
+        "denialOfService": [],
+        "elevationOfPrivilege": []
+      }
+    },
+    "trustBoundaryDiagram": {
+      "mermaid": "flowchart LR\n  INTERNET((Internet))\n  APP[\"Application\"]\n  classDef sev_critical fill:#ffcccc,stroke:#a00,stroke-width:2px;\n  classDef sev_high fill:#ffe0b2,stroke:#c60,stroke-width:2px;\n  classDef sev_medium fill:#fff3cd,stroke:#a80;\n  classDef sev_low fill:#e8eaf6,stroke:#557;",
+      "nodes": [
+        {
+          "id": "INTERNET",
+          "kind": "external",
+          "label": "Internet"
+        },
+        {
+          "id": "APP",
+          "kind": "app",
+          "label": "Application"
+        }
+      ],
+      "edges": [],
+      "decorations": []
+    },
+    "calibrationDrift": {
+      "alarms": [],
+      "note": "no-feedback-data"
+    }
+  },
+  "annotatorErrors": []
+}

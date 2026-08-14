@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Superpowers Ecosystem Graph</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a0f; color: #e0e0e0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; overflow: hidden; }
+
+#sidebar {
+  position: fixed; left: 0; top: 0; width: 320px; height: 100vh;
+  background: linear-gradient(180deg, #0d0d18 0%, #0a0a14 100%);
+  border-right: 1px solid #1a1a2e; z-index: 100; overflow-y: auto;
+  padding: 20px 16px;
+}
+#sidebar h2 { font-size: 18px; color: #8b8bff; margin-bottom: 4px; letter-spacing: 1px; }
+#sidebar .subtitle { font-size: 11px; color: #555; margin-bottom: 16px; }
+
+.filter-group { margin-bottom: 16px; }
+.filter-group label { display: block; font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+.filter-btn {
+  display: inline-block; padding: 4px 10px; margin: 2px; border-radius: 12px;
+  font-size: 11px; cursor: pointer; border: 1px solid #2a2a3e; background: #12121e;
+  color: #aaa; transition: all 0.2s;
+}
+.filter-btn:hover, .filter-btn.active { background: #2a2a4e; color: #fff; border-color: #5555aa; }
+.filter-btn.active { box-shadow: 0 0 8px rgba(100,100,255,0.3); }
+
+.stat-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.stat {
+  background: #12121e; border: 1px solid #1a1a2e; border-radius: 8px;
+  padding: 8px 12px; text-align: center; flex: 1; min-width: 70px;
+}
+.stat .num { font-size: 22px; font-weight: 700; color: #8b8bff; }
+.stat .lbl { font-size: 9px; color: #555; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+#detail-panel {
+  position: fixed; right: -400px; top: 0; width: 380px; height: 100vh;
+  background: linear-gradient(180deg, #0d0d18 0%, #0a0a14 100%);
+  border-left: 1px solid #1a1a2e; z-index: 100; overflow-y: auto;
+  padding: 24px 20px; transition: right 0.3s ease;
+}
+#detail-panel.open { right: 0; }
+#detail-panel h3 { font-size: 18px; color: #fff; margin-bottom: 4px; }
+#detail-panel .type-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 12px;
+  font-size: 11px; font-weight: 600; margin-bottom: 12px;
+}
+#detail-panel .desc { font-size: 13px; color: #aaa; line-height: 1.6; margin-bottom: 16px; }
+#detail-panel .related-title { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+#detail-panel .related-item {
+  display: block; padding: 6px 10px; margin-bottom: 2px; border-radius: 6px;
+  font-size: 12px; color: #aaa; cursor: pointer; background: transparent; border: none; text-align: left; width: 100%;
+}
+#detail-panel .related-item:hover { background: #1a1a2e; color: #fff; }
+#detail-panel .close-btn {
+  position: absolute; top: 16px; right: 16px; background: none; border: none;
+  color: #555; font-size: 20px; cursor: pointer;
+}
+#detail-panel .close-btn:hover { color: #fff; }
+
+canvas { display: block; }
+
+#search {
+  width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #1a1a2e;
+  background: #12121e; color: #e0e0e0; font-size: 13px; margin-bottom: 16px;
+}
+#search::placeholder { color: #444; }
+#search:focus { outline: none; border-color: #5555aa; }
+
+.zoom-controls {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 8px; z-index: 50;
+}
+.zoom-btn {
+  width: 40px; height: 40px; border-radius: 50%; border: 1px solid #1a1a2e;
+  background: #12121e; color: #aaa; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.zoom-btn:hover { background: #2a2a4e; color: #fff; border-color: #5555aa; }
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <h2>SUPERPOWERS ECOSYSTEM</h2>
+  <p class="subtitle">Skills, Councils, Agents & Workflows</p>
+
+  <input type="text" id="search" placeholder="Search nodes...">
+
+  <div class="stat-bar">
+    <div class="stat"><div class="num" id="stat-skills">0</div><div class="lbl">Skills</div></div>
+    <div class="stat"><div class="num" id="stat-agents">0</div><div class="lbl">Agents</div></div>
+    <div class="stat"><div class="num" id="stat-councils">0</div><div class="lbl">Councils</div></div>
+    <div class="stat"><div class="num" id="stat-edges">0</div><div class="lbl">Links</div></div>
+  </div>
+
+  <div class="filter-group">
+    <label>Filter by Layer</label>
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="process">Process</button>
+    <button class="filter-btn" data-filter="council">Council</button>
+    <button class="filter-btn" data-filter="agent">Agent</button>
+    <button class="filter-btn" data-filter="platform">Platform</button>
+    <button class="filter-btn" data-filter="review">Review</button>
+  </div>
+
+  <div class="filter-group">
+    <label>Legend</label>
+    <div class="legend-item"><div class="legend-dot" style="background:#8b8bff"></div>Process Skills</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ff6b9d"></div>Agentic Council</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ffa94d"></div>Decision Council</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#51cf66"></div>Platform Skills</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ffd43b"></div>Feature Dev</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ff8787"></div>PR Review</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#74c0fc"></div>Standalone Agents</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ffffff"></div>Hub / Entry</div>
+  </div>
+</div>
+
+<div id="detail-panel">
+  <button class="close-btn" onclick="closeDetail()">&times;</button>
+  <h3 id="detail-name"></h3>
+  <div class="type-badge" id="detail-badge"></div>
+  <div class="desc" id="detail-desc"></div>
+  <div class="related-title">Connected To</div>
+  <div id="detail-related"></div>
+</div>
+
+<canvas id="graph"></canvas>
+
+<div class="zoom-controls">
+  <button class="zoom-btn" onclick="zoomIn()">+</button>
+  <button class="zoom-btn" onclick="zoomOut()">&minus;</button>
+  <button class="zoom-btn" onclick="resetView()">&#8634;</button>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────
+const nodes = [
+  // Entry
+  {id:"user",label:"User",group:"entry",layer:"all",r:18,color:"#ffffff",desc:"Entry point — all skills invoked by user or on behalf of user"},
+
+  // Process Skills
+  {id:"brainstorming",label:"brainstorming",group:"process",layer:"process",r:14,color:"#8b8bff",desc:"Turn ideas into designs via collaborative dialogue. Always invoke first for new features."},
+  {id:"writing-plans",label:"writing-plans",group:"process",layer:"process",r:13,color:"#8b8bff",desc:"Create detailed implementation plans from approved specs. Called after brainstorming."},
+  {id:"executing-plans",label:"executing-plans",group:"process",layer:"process",r:13,color:"#8b8bff",desc:"Execute implementation plans step-by-step. The main work loop."},
+  {id:"tdd",label:"TDD",group:"process",layer:"process",r:11,color:"#8b8bff",desc:"Test-Driven Development (rigid). Red-green-refactor cycle."},
+  {id:"sadd",label:"subagent-dev",group:"process",layer:"process",r:12,color:"#8b8bff",desc:"Decompose tasks & dispatch to parallel subagents."},
+  {id:"dpa",label:"dispatch-parallel",group:"process",layer:"process",r:11,color:"#8b8bff",desc:"Fan-out independent work to multiple agents concurrently."},
+  {id:"vbc",label:"verify-before-done",group:"process",layer:"process",r:11,color:"#8b8bff",desc:"Verify changes work before declaring done. Runs app or tests."},
+  {id:"systematic-debug",label:"systematic-debug",group:"process",layer:"process",r:11,color:"#8b8bff",desc:"Structured debugging process (rigid). Systematic hypothesis testing."},
+  {id:"req-cr",label:"request-code-review",group:"process",layer:"process",r:10,color:"#8b8bff",desc:"Request review from pr-review-toolkit agents."},
+  {id:"recv-cr",label:"receive-code-review",group:"process",layer:"process",r:10,color:"#8b8bff",desc:"Process and apply code review feedback."},
+  {id:"finish-branch",label:"finish-branch",group:"process",layer:"process",r:10,color:"#8b8bff",desc:"Clean up, push, create PR. End of branch lifecycle."},
+  {id:"git-worktrees",label:"git-worktrees",group:"process",layer:"process",r:9,color:"#8b8bff",desc:"Isolated git worktrees for parallel safe development."},
+  {id:"using-superpowers",label:"using-superpowers",group:"process",layer:"process",r:9,color:"#8b8bff",desc:"Meta-skill: how to discover and invoke skills."},
+  {id:"writing-skills",label:"writing-skills",group:"process",layer:"process",r:9,color:"#8b8bff",desc:"Create new skills from scratch."},
+
+  // Agentic Council Hub
+  {id:"agentic-council",label:"Agentic Council",group:"council_hub",layer:"council",r:16,color:"#ff6b9d",desc:"Multi-agent analysis across specialized lenses. 38 agents, 3 themed councils, 60+ specialized skills."},
+
+  // Council Orchestration Skills
+  {id:"ac-brainstorm",label:"council:brainstorm",group:"council_skill",layer:"council",r:10,color:"#ff6b9d",desc:"Brainstorm with council lenses applied."},
+  {id:"ac-council",label:"council:council",group:"council_skill",layer:"council",r:10,color:"#ff6b9d",desc:"Full council analysis session."},
+  {id:"ac-deepen",label:"council:deepen",group:"council_skill",layer:"council",r:10,color:"#ff6b9d",desc:"Deep-dive into a specific topic with council."},
+  {id:"ac-ship",label:"council:ship",group:"council_skill",layer:"council",r:10,color:"#ff6b9d",desc:"Ship/validate council output."},
+  {id:"ac-handover",label:"council:handover",group:"council_skill",layer:"council",r:10,color:"#ff6b9d",desc:"Hand off council findings to next phase."},
+
+  // Themed Councils
+  {id:"finance-council",label:"Finance Council",group:"council_theme",layer:"council",r:13,color:"#ff6b9d",desc:"Comptroller, Controller, FP&A, Treasurer, Tax, Auditor, Capital, RegRep"},
+  {id:"people-council",label:"People Council",group:"council_theme",layer:"council",r:13,color:"#ff6b9d",desc:"Chair, PeopleOps, PeoplePartner, Talent, TotalRewards, LearnDev, DEI"},
+  {id:"revenue-council",label:"Revenue Council",group:"council_theme",layer:"council",r:13,color:"#ff6b9d",desc:"Quartermaster, AE, SDR, Herald, Strategist"},
+
+  // Key Agentic Council Agents (representative)
+  {id:"steward",label:"Steward",group:"agent",layer:"agent",r:9,color:"#e8e8e8",desc:"Platinum Lens — Orchestration, synthesis, facilitation (Maestro persona)."},
+  {id:"advocate",label:"Advocate",group:"agent",layer:"agent",r:9,color:"#69db7c",desc:"Green Lens — User experience, product thinking, accessibility."},
+  {id:"architect",label:"Architect",group:"agent",layer:"agent",r:10,color:"#74c0fc",desc:"Blue Lens — System design, data models, APIs, integration patterns."},
+  {id:"oracle",label:"Oracle",group:"agent",layer:"agent",r:9,color:"#b197fc",desc:"Violet Lens — AI/LLM integration, RAG, prompt engineering."},
+  {id:"skeptic",label:"Skeptic",group:"agent",layer:"agent",r:9,color:"#ff8787",desc:"Red Lens — Risk assessment, devil's advocate, security."},
+  {id:"strategist",label:"Strategist",group:"agent",layer:"agent",r:9,color:"#ffd43b",desc:"Gold Lens — Business value, scope, MVP, prioritization."},
+  {id:"craftsman",label:"Craftsman",group:"agent",layer:"agent",r:9,color:"#da77f2",desc:"Purple Lens — DX, testing strategy, code quality, patterns."},
+  {id:"operator",label:"Operator",group:"agent",layer:"agent",r:9,color:"#ff922b",desc:"Orange Lens — DevOps, deployment, infrastructure, monitoring."},
+  {id:"cipher",label:"Cipher",group:"agent",layer:"agent",r:9,color:"#495057",desc:"Obsidian Lens — Cryptographic engineering, protocol security, PQC."},
+  {id:"tuner",label:"Tuner",group:"agent",layer:"agent",r:9,color:"#ff922b",desc:"Amber Lens — Performance, scalability, optimization, capacity planning."},
+  {id:"scout",label:"Scout",group:"agent",layer:"agent",r:9,color:"#66d9e8",desc:"Cyan Lens — Research, precedent, external knowledge."},
+  {id:"herald",label:"Herald",group:"agent",layer:"agent",r:9,color:"#e8590c",desc:"Bronze Lens — Growth, monetization, onboarding, retention."},
+  {id:"sentinel",label:"Sentinel",group:"agent",layer:"agent",r:9,color:"#adb5bd",desc:"Titanium Lens — IoT, embedded, edge, device protocols."},
+  {id:"guardian",label:"Guardian",group:"agent",layer:"agent",r:9,color:"#dee2e6",desc:"Silver Lens — Compliance, governance, privacy."},
+  {id:"artisan",label:"Artisan",group:"agent",layer:"agent",r:9,color:"#f783ac",desc:"Rose Lens — Visual design, design systems, motion."},
+  {id:"chronicler",label:"Chronicler",group:"agent",layer:"agent",r:9,color:"#f1f3f5",desc:"Ivory Lens — Documentation, knowledge architecture, onboarding."},
+  {id:"prover",label:"Prover",group:"agent",layer:"agent",r:9,color:"#e8d5b7",desc:"Pearl Lens — Formal methods, mathematical verification, security invariants."},
+  {id:"alchemist",label:"Alchemist",group:"agent",layer:"agent",r:9,color:"#5c7cfa",desc:"Indigo Lens — Data engineering, data science, ML workflows, analytics."},
+  {id:"pathfinder",label:"Pathfinder",group:"agent",layer:"agent",r:9,color:"#ff8787",desc:"Coral Lens — Mobile, cross-platform, native apps."},
+  {id:"warden",label:"Warden",group:"agent",layer:"agent",r:9,color:"#868e96",desc:"Slate Lens — OS kernel security, process isolation, privilege boundaries."},
+
+  // Decision Council Hub
+  {id:"decision-council",label:"Decision Council",group:"council_hub",layer:"council",r:14,color:"#ffa94d",desc:"Structured multi-perspective decision making. 8 agents, 4 skills."},
+
+  // Decision Council Skills
+  {id:"dc-convene",label:"council:convene",group:"council_skill",layer:"council",r:10,color:"#ffa94d",desc:"Full council session for a decision."},
+  {id:"dc-quick",label:"council:quick",group:"council_skill",layer:"council",r:10,color:"#ffa94d",desc:"Abbreviated decision analysis."},
+  {id:"dc-debrief",label:"council:debrief",group:"council_skill",layer:"council",r:10,color:"#ffa94d",desc:"Post-session analysis and dashboard."},
+
+  // Decision Council Agents
+  {id:"chairman",label:"Chairman",group:"agent",layer:"agent",r:10,color:"#ffa94d",desc:"Convene, orchestrate, synthesize recommendation."},
+  {id:"optimist",label:"Optimist",group:"agent",layer:"agent",r:8,color:"#ffa94d",desc:"Strongest honest case for upside."},
+  {id:"pessimist",label:"Pessimist",group:"agent",layer:"agent",r:8,color:"#ffa94d",desc:"Stress-test downside risk and failure modes."},
+  {id:"devil-advocate",label:"Devil's Advocate",group:"agent",layer:"agent",r:8,color:"#ffa94d",desc:"Challenge all positions, especially consensus."},
+  {id:"pragmatist",label:"Pragmatist",group:"agent",layer:"agent",r:8,color:"#ffa94d",desc:"Assess implementation reality and execution risk."},
+  {id:"mirror",label:"Mirror",group:"agent",layer:"agent",r:8,color:"#ffa94d",desc:"Deliver brutal truth the chairman softened."},
+  {id:"behaviourist",label:"Behaviourist",group:"agent",layer:"agent",r:8,color:"#ffa94d",desc:"Audit reasoning quality, detect cognitive bias."},
+
+  // Feature Dev
+  {id:"feature-dev",label:"Feature Dev",group:"feature_hub",layer:"review",r:13,color:"#ffd43b",desc:"Feature development pipeline. 3 agents, 1 orchestration skill."},
+  {id:"code-architect",label:"code-architect",group:"agent",layer:"agent",r:9,color:"#ffd43b",desc:"Design feature architecture from codebase patterns."},
+  {id:"code-explorer",label:"code-explorer",group:"agent",layer:"agent",r:9,color:"#ffd43b",desc:"Trace execution paths, map architecture layers."},
+  {id:"fd-code-reviewer",label:"fd:code-reviewer",group:"agent",layer:"agent",r:9,color:"#ffd43b",desc:"Review for bugs, logic errors, security, code quality."},
+
+  // PR Review Toolkit
+  {id:"pr-review",label:"PR Review Toolkit",group:"review_hub",layer:"review",r:13,color:"#ff8787",desc:"Multi-dimensional code review pipeline. 6 agents, 1 orchestration skill."},
+  {id:"pr-code-reviewer",label:"pr:code-reviewer",group:"agent",layer:"agent",r:9,color:"#ff8787",desc:"Style, guidelines, best practices review."},
+  {id:"code-simplifier",label:"code-simplifier",group:"agent",layer:"agent",r:9,color:"#ff8787",desc:"Clarity, consistency, maintainability improvements."},
+  {id:"comment-analyzer",label:"comment-analyzer",group:"agent",layer:"agent",r:8,color:"#ff8787",desc:"Comment accuracy, completeness, rot detection."},
+  {id:"pr-test-analyzer",label:"pr:test-analyzer",group:"agent",layer:"agent",r:8,color:"#ff8787",desc:"Test coverage quality and completeness."},
+  {id:"silent-failure",label:"silent-failure-hunter",group:"agent",layer:"agent",r:9,color:"#ff8787",desc:"Error handling, fallback behavior, suppressed errors."},
+  {id:"type-design",label:"type-design-analyzer",group:"agent",layer:"agent",r:8,color:"#ff8787",desc:"Type encapsulation, invariants, usefulness."},
+
+  // Platform Skills
+  {id:"vercel",label:"Vercel",group:"platform_hub",layer:"platform",r:14,color:"#51cf66",desc:"30+ skills for Vercel platform. ai-architect, deployment-expert, performance-optimizer agents."},
+  {id:"stripe",label:"Stripe",group:"platform_hub",layer:"platform",r:10,color:"#51cf66",desc:"7 skills: explain-error, test-cards, connect-recommend, best-practices, directory, projects, upgrade."},
+  {id:"supabase",label:"Supabase",group:"platform_hub",layer:"platform",r:10,color:"#51cf66",desc:"2 skills: supabase, supabase-postgres-best-practices."},
+  {id:"huggingface",label:"HuggingFace",group:"platform_hub",layer:"platform",r:10,color:"#51cf66",desc:"20 skills for models, spaces, datasets, training, Gradio, ZeroGPU, etc."},
+  {id:"chrome-devtools",label:"Chrome DevTools",group:"platform_hub",layer:"platform",r:10,color:"#51cf66",desc:"6 MCP skills: a11y-debugging, chrome-devtools, debug-optimize-lcp, memory-leak, troubleshooting."},
+  {id:"atlassian",label:"Atlassian",group:"platform_hub",layer:"platform",r:10,color:"#51cf66",desc:"5 skills: capture-tasks, status-report, search-knowledge, spec-to-backlog, triage-issue."},
+  {id:"telegram",label:"Telegram",group:"platform_hub",layer:"platform",r:8,color:"#51cf66",desc:"2 skills: access, configure."},
+
+  // Vercel Agents
+  {id:"ai-architect",label:"ai-architect",group:"agent",layer:"agent",r:9,color:"#51cf66",desc:"AI-powered applications on Vercel — AI SDK, providers, agents, MCP."},
+  {id:"deployment-expert",label:"deployment-expert",group:"agent",layer:"agent",r:9,color:"#51cf66",desc:"Vercel deployment, CI/CD, preview URLs, env vars, domains."},
+  {id:"perf-optimizer",label:"performance-optimizer",group:"agent",layer:"agent",r:9,color:"#51cf66",desc:"Core Web Vitals, rendering, caching, image optimization, bundle size."},
+
+  // Standalone Skills
+  {id:"deep-research",label:"deep-research",group:"standalone",layer:"process",r:11,color:"#c0c0c0",desc:"Fan-out web search, verify claims, synthesize cited report."},
+  {id:"frontend-design",label:"frontend-design",group:"standalone",layer:"all",r:10,color:"#c0c0c0",desc:"Frontend UI design and implementation."},
+  {id:"code-review",label:"code-review",group:"standalone",layer:"review",r:10,color:"#c0c0c0",desc:"Review diff for correctness bugs and cleanups."},
+  {id:"simplify",label:"simplify",group:"standalone",layer:"review",r:10,color:"#c0c0c0",desc:"Review changed code for reuse, simplification, efficiency."},
+  {id:"verify",label:"verify",group:"standalone",layer:"process",r:10,color:"#c0c0c0",desc:"Verify code change works by running the app."},
+  {id:"claude-api",label:"claude-api",group:"standalone",layer:"all",r:9,color:"#c0c0c0",desc:"Reference for Claude API / Anthropic SDK."},
+  {id:"run",label:"run",group:"standalone",layer:"process",r:9,color:"#c0c0c0",desc:"Launch and drive the project's app."},
+  {id:"loop",label:"loop",group:"standalone",layer:"process",r:9,color:"#c0c0c0",desc:"Run a prompt on a recurring interval."},
+  {id:"agent-sdk-dev",label:"agent-sdk-dev",group:"standalone",layer:"all",r:9,color:"#c0c0c0",desc:"Create new Agent SDK applications."},
+
+  // Standalone Agents
+  {id:"explore",label:"Explore",group:"agent",layer:"agent",r:9,color:"#74c0fc",desc:"Read-only search agent for broad fan-out searches."},
+  {id:"plan-agent",label:"Plan",group:"agent",layer:"agent",r:9,color:"#74c0fc",desc:"Software architect agent for designing implementation plans."},
+  {id:"general-purpose",label:"general-purpose",group:"agent",layer:"agent",r:9,color:"#74c0fc",desc:"Catch-all agent for researching complex questions."},
+  {id:"claude-code-guide",label:"claude-code-guide",group:"agent",layer:"agent",r:8,color:"#74c0fc",desc:"Q&A about Claude Code, Agent SDK, Claude API."},
+  {id:"statusline-setup",label:"statusline-setup",group:"agent",layer:"agent",r:7,color:"#74c0fc",desc:"Configure Claude Code status line setting."},
+];
+
+const edges = [
+  // Process flow
+  {source:"user",target:"brainstorming"},
+  {source:"brainstorming",target:"writing-plans",label:"design→plan"},
+  {source:"writing-plans",target:"executing-plans",label:"plan→execute"},
+  {source:"executing-plans",target:"tdd"},
+  {source:"executing-plans",target:"sadd"},
+  {source:"executing-plans",target:"dpa"},
+  {source:"executing-plans",target:"vbc"},
+  {source:"executing-plans",target:"systematic-debug"},
+  {source:"vbc",target:"req-cr"},
+  {source:"req-cr",target:"recv-cr"},
+  {source:"recv-cr",target:"finish-branch"},
+  {source:"user",target:"git-worktrees"},
+
+  // Agentic Council connections
+  {source:"user",target:"agentic-council"},
+  {source:"agentic-council",target:"ac-brainstorm"},
+  {source:"agentic-council",target:"ac-council"},
+  {source:"agentic-council",target:"ac-deepen"},
+  {source:"agentic-council",target:"ac-ship"},
+  {source:"agentic-council",target:"ac-handover"},
+  {source:"agentic-council",target:"finance-council"},
+  {source:"agentic-council",target:"people-council"},
+  {source:"agentic-council",target:"revenue-council"},
+
+  // Council agents
+  {source:"agentic-council",target:"steward"},
+  {source:"agentic-council",target:"advocate"},
+  {source:"agentic-council",target:"architect"},
+  {source:"agentic-council",target:"oracle"},
+  {source:"agentic-council",target:"skeptic"},
+  {source:"agentic-council",target:"strategist"},
+  {source:"agentic-council",target:"craftsman"},
+  {source:"agentic-council",target:"operator"},
+  {source:"agentic-council",target:"cipher"},
+  {source:"agentic-council",target:"tuner"},
+  {source:"agentic-council",target:"scout"},
+  {source:"agentic-council",target:"herald"},
+  {source:"agentic-council",target:"sentinel"},
+  {source:"agentic-council",target:"guardian"},
+  {source:"agentic-council",target:"artisan"},
+  {source:"agentic-council",target:"chronicler"},
+  {source:"agentic-council",target:"prover"},
+  {source:"agentic-council",target:"alchemist"},
+  {source:"agentic-council",target:"pathfinder"},
+  {source:"agentic-council",target:"warden"},
+
+  // Themed councils to agents
+  {source:"finance-council",target:"steward",dashed:true},
+  {source:"people-council",target:"steward",dashed:true},
+  {source:"revenue-council",target:"steward",dashed:true},
+
+  // SADD / DPA connect to councils
+  {source:"sadd",target:"agentic-council",label:"dispatches"},
+  {source:"dpa",target:"agentic-council",label:"fan-out"},
+
+  // Decision Council
+  {source:"user",target:"decision-council"},
+  {source:"decision-council",target:"dc-convene"},
+  {source:"decision-council",target:"dc-quick"},
+  {source:"decision-council",target:"dc-debrief"},
+  {source:"decision-council",target:"chairman"},
+  {source:"decision-council",target:"optimist"},
+  {source:"decision-council",target:"pessimist"},
+  {source:"decision-council",target:"devil-advocate"},
+  {source:"decision-council",target:"pragmatist"},
+  {source:"decision-council",target:"mirror"},
+  {source:"decision-council",target:"behaviourist"},
+
+  // Feature Dev
+  {source:"user",target:"feature-dev"},
+  {source:"feature-dev",target:"code-architect"},
+  {source:"feature-dev",target:"code-explorer"},
+  {source:"feature-dev",target:"fd-code-reviewer"},
+
+  // PR Review
+  {source:"req-cr",target:"pr-review",label:"triggers"},
+  {source:"pr-review",target:"pr-code-reviewer"},
+  {source:"pr-review",target:"code-simplifier"},
+  {source:"pr-review",target:"comment-analyzer"},
+  {source:"pr-review",target:"pr-test-analyzer"},
+  {source:"pr-review",target:"silent-failure"},
+  {source:"pr-review",target:"type-design"},
+
+  // Platform hubs
+  {source:"user",target:"vercel"},
+  {source:"user",target:"stripe"},
+  {source:"user",target:"supabase"},
+  {source:"user",target:"huggingface"},
+  {source:"user",target:"chrome-devtools"},
+  {source:"user",target:"atlassian"},
+  {source:"user",target:"telegram"},
+  {source:"vercel",target:"ai-architect"},
+  {source:"vercel",target:"deployment-expert"},
+  {source:"vercel",target:"perf-optimizer"},
+
+  // Standalone connections
+  {source:"user",target:"deep-research"},
+  {source:"user",target:"frontend-design"},
+  {source:"user",target:"code-review"},
+  {source:"user",target:"simplify"},
+  {source:"user",target:"verify"},
+  {source:"user",target:"claude-api"},
+  {source:"user",target:"run"},
+  {source:"user",target:"loop"},
+  {source:"user",target:"agent-sdk-dev"},
+  {source:"vbc",target:"verify"},
+
+  // Standalone agents
+  {source:"deep-research",target:"explore"},
+  {source:"sadd",target:"explore",dashed:true},
+  {source:"executing-plans",target:"plan-agent",dashed:true},
+  {source:"sadd",target:"general-purpose",dashed:true},
+
+  // Cross-connections
+  {source:"code-review",target:"pr-review",dashed:true},
+  {source:"simplify",target:"code-simplifier",dashed:true},
+  {source:"frontend-design",target:"artisan",dashed:true},
+  {source:"tdd",target:"craftsman",dashed:true},
+  {source:"systematic-debug",target:"explore",dashed:true},
+];
+
+// ─── PHYSICS SIMULATION ─────────────────────────────────────────────
+const canvas = document.getElementById('graph');
+const ctx = canvas.getContext('2d');
+let W, H;
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// Node map
+const nodeMap = {};
+nodes.forEach(n => {
+  n.x = 340 + Math.random() * (W - 700);
+  n.y = 50 + Math.random() * (H - 100);
+  n.vx = 0; n.vy = 0;
+  nodeMap[n.id] = n;
+});
+
+let activeFilter = 'all';
+let searchTerm = '';
+let selectedNode = null;
+let panX = 0, panY = 0, scale = 1;
+let dragging = null, dragOffX = 0, dragOffY = 0;
+let isPanning = false, lastMX = 0, lastMY = 0;
+
+function isVisible(n) {
+  if (activeFilter !== 'all' && n.layer !== activeFilter && n.layer !== 'all') return false;
+  if (searchTerm && !n.label.toLowerCase().includes(searchTerm) && !n.id.toLowerCase().includes(searchTerm)) return false;
+  return true;
+}
+
+// Stats
+const skillCount = nodes.filter(n => n.group === 'process' || n.group === 'standalone' || n.group === 'council_skill').length;
+const agentCount = nodes.filter(n => n.group === 'agent').length;
+const councilCount = nodes.filter(n => n.group === 'council_hub' || n.group === 'council_theme').length;
+const edgeCount = edges.length;
+document.getElementById('stat-skills').textContent = skillCount;
+document.getElementById('stat-agents').textContent = agentCount;
+document.getElementById('stat-councils').textContent = councilCount;
+document.getElementById('stat-edges').textContent = edgeCount;
+
+// Filters
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+  });
+});
+
+document.getElementById('search').addEventListener('input', e => {
+  searchTerm = e.target.value.toLowerCase();
+});
+
+// Force simulation
+function simulate() {
+  const alpha = 0.3;
+  const repulse = 2500;
+  const attract = 0.005;
+  const center = 0.001;
+  const cx = (W - 320) / 2 + 320;
+  const cy = H / 2;
+
+  // Repulsion
+  for (let i = 0; i < nodes.length; i++) {
+    if (!isVisible(nodes[i])) continue;
+    for (let j = i + 1; j < nodes.length; j++) {
+      if (!isVisible(nodes[j])) continue;
+      let dx = nodes[i].x - nodes[j].x;
+      let dy = nodes[i].y - nodes[j].y;
+      let dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      let force = repulse / (dist * dist);
+      let fx = (dx / dist) * force;
+      let fy = (dy / dist) * force;
+      nodes[i].vx += fx;
+      nodes[i].vy += fy;
+      nodes[j].vx -= fx;
+      nodes[j].vy -= fy;
+    }
+  }
+
+  // Attraction (edges)
+  edges.forEach(e => {
+    const a = nodeMap[e.source];
+    const b = nodeMap[e.target];
+    if (!a || !b || !isVisible(a) || !isVisible(b)) return;
+    let dx = b.x - a.x;
+    let dy = b.y - a.y;
+    let dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    let force = attract * (dist - 120);
+    let fx = (dx / dist) * force;
+    let fy = (dy / dist) * force;
+    a.vx += fx; a.vy += fy;
+    b.vx -= fx; b.vy -= fy;
+  });
+
+  // Center gravity
+  nodes.forEach(n => {
+    if (!isVisible(n)) return;
+    n.vx += (cx - n.x) * center;
+    n.vy += (cy - n.y) * center;
+  });
+
+  // Apply velocity
+  nodes.forEach(n => {
+    if (!isVisible(n) || dragging === n) return;
+    n.vx *= 0.85;
+    n.vy *= 0.85;
+    n.x += n.vx * alpha;
+    n.y += n.vy * alpha;
+  });
+}
+
+function draw() {
+  ctx.save();
+  ctx.clearRect(0, 0, W, H);
+  ctx.translate(panX, panY);
+  ctx.scale(scale, scale);
+
+  // Draw edges
+  edges.forEach(e => {
+    const a = nodeMap[e.source];
+    const b = nodeMap[e.target];
+    if (!a || !b || !isVisible(a) || !isVisible(b)) return;
+    const isDashed = e.dashed;
+
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(b.x, b.y);
+    ctx.strokeStyle = isDashed ? 'rgba(100,100,150,0.15)' : 'rgba(100,100,150,0.25)';
+    ctx.lineWidth = isDashed ? 0.5 : 1;
+    if (isDashed) ctx.setLineDash([4, 4]); else ctx.setLineDash([]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    if (e.label) {
+      const mx = (a.x + b.x) / 2;
+      const my = (a.y + b.y) / 2;
+      ctx.fillStyle = 'rgba(150,150,200,0.5)';
+      ctx.font = '9px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(e.label, mx, my - 4);
+    }
+  });
+
+  // Draw nodes
+  nodes.forEach(n => {
+    if (!isVisible(n)) return;
+
+    const isSelected = selectedNode === n;
+    const r = n.r || 10;
+
+    // Glow
+    if (isSelected || n.group === 'council_hub' || n.group === 'entry') {
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, r + 6, 0, Math.PI * 2);
+      ctx.fillStyle = n.color.replace(')', ',0.15)').replace('rgb', 'rgba').replace('##', '#');
+      const grd = ctx.createRadialGradient(n.x, n.y, r, n.x, n.y, r + 12);
+      grd.addColorStop(0, n.color + '44');
+      grd.addColorStop(1, n.color + '00');
+      ctx.fillStyle = grd;
+      ctx.fill();
+    }
+
+    // Node
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+    ctx.fillStyle = n.color + (isSelected ? 'ff' : 'cc');
+    ctx.fill();
+    ctx.strokeStyle = isSelected ? '#fff' : n.color + '66';
+    ctx.lineWidth = isSelected ? 2 : 1;
+    ctx.stroke();
+
+    // Label
+    ctx.fillStyle = isSelected ? '#fff' : '#ccc';
+    ctx.font = (isSelected ? 'bold ' : '') + (r > 12 ? '12' : '10') + 'px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(n.label, n.x, n.y + r + 12);
+  });
+
+  ctx.restore();
+}
+
+function loop() {
+  simulate();
+  draw();
+  requestAnimationFrame(loop);
+}
+loop();
+
+// ─── INTERACTION ──────────────────────────────────────────────────
+canvas.addEventListener('mousedown', e => {
+  const mx = (e.clientX - panX) / scale;
+  const my = (e.clientY - panY) / scale;
+
+  // Hit test nodes (reverse order for top-most)
+  for (let i = nodes.length - 1; i >= 0; i--) {
+    const n = nodes[i];
+    if (!isVisible(n)) continue;
+    const dx = mx - n.x;
+    const dy = my - n.y;
+    if (dx * dx + dy * dy < (n.r + 4) * (n.r + 4)) {
+      dragging = n;
+      dragOffX = mx - n.x;
+      dragOffY = my - n.y;
+      selectedNode = n;
+      showDetail(n);
+      return;
+    }
+  }
+  selectedNode = null;
+  closeDetail();
+  isPanning = true;
+  lastMX = e.clientX;
+  lastMY = e.clientY;
+});
+
+canvas.addEventListener('mousemove', e => {
+  if (dragging) {
+    dragging.x = (e.clientX - panX) / scale - dragOffX;
+    dragging.y = (e.clientY - panY) / scale - dragOffY;
+    dragging.vx = 0; dragging.vy = 0;
+  } else if (isPanning) {
+    panX += e.clientX - lastMX;
+    panY += e.clientY - lastMY;
+    lastMX = e.clientX;
+    lastMY = e.clientY;
+  }
+});
+
+canvas.addEventListener('mouseup', () => {
+  dragging = null;
+  isPanning = false;
+});
+
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? 0.9 : 1.1;
+  scale *= delta;
+  scale = Math.max(0.2, Math.min(3, scale));
+}, { passive: false });
+
+function showDetail(n) {
+  const panel = document.getElementById('detail-panel');
+  document.getElementById('detail-name').textContent = n.label;
+  document.getElementById('detail-desc').textContent = n.desc || '';
+
+  const badge = document.getElementById('detail-badge');
+  const groupNames = {
+    entry: 'Entry Point', process: 'Process Skill', council_hub: 'Council Hub',
+    council_skill: 'Council Skill', council_theme: 'Themed Council',
+    agent: 'Agent', platform_hub: 'Platform Hub', feature_hub: 'Feature Pipeline',
+    review_hub: 'Review Pipeline', standalone: 'Standalone Skill'
+  };
+  badge.textContent = groupNames[n.group] || n.group;
+  badge.style.background = n.color + '33';
+  badge.style.color = n.color;
+
+  // Related
+  const related = [];
+  edges.forEach(e => {
+    if (e.source === n.id) related.push({ id: e.target, label: e.label || 'calls' });
+    if (e.target === n.id) related.push({ id: e.source, label: e.label || 'called by' });
+  });
+  const container = document.getElementById('detail-related');
+  container.innerHTML = '';
+  related.forEach(r => {
+    const rn = nodeMap[r.id];
+    if (!rn) return;
+    const btn = document.createElement('button');
+    btn.className = 'related-item';
+    btn.innerHTML = `<span style="color:${rn.color}">●</span> ${rn.label} <span style="color:#555;font-size:10px">(${r.label})</span>`;
+    btn.onclick = () => {
+      selectedNode = rn;
+      showDetail(rn);
+    };
+    container.appendChild(btn);
+  });
+
+  panel.classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detail-panel').classList.remove('open');
+}
+
+function zoomIn() { scale = Math.min(3, scale * 1.2); }
+function zoomOut() { scale = Math.max(0.2, scale * 0.8); }
+function resetView() { scale = 1; panX = 0; panY = 0; }
+
+// Double-click to focus
+canvas.addEventListener('dblclick', e => {
+  const mx = (e.clientX - panX) / scale;
+  const my = (e.clientY - panY) / scale;
+  for (let i = nodes.length - 1; i >= 0; i--) {
+    const n = nodes[i];
+    if (!isVisible(n)) continue;
+    const dx = mx - n.x;
+    const dy = my - n.y;
+    if (dx * dx + dy * dy < (n.r + 4) * (n.r + 4)) {
+      panX = W / 2 - n.x * scale;
+      panY = H / 2 - n.y * scale;
+      return;
+    }
+  }
+});
+</script>
+</body>
+</html>

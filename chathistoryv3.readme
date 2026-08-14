@@ -1,0 +1,53 @@
+# Chat History v3 — Latest Changes (May 2026)
+
+## Latest Changes
+
+### 1) Switch AI from Gemini to NVIDIA API
+- **Commit**: `14a4a49`
+- **Files**: `app/api/ai/chat/route.ts`, `app/api/ai/ndvi-summary/route.ts`
+- Replaced `@google/generative-ai` with direct NVIDIA NIM API calls (`integrate.api.nvidia.com/v1`)
+- Uses `meta/llama-3.3-70b-instruct` by default, configurable via `AI_MODEL` env var
+- Removed GEMINI_API_KEY dependency; now requires `NVIDIA_API_KEY` instead
+- Added Gemini 429 fallback path (`c38bf97`)
+
+### 2) Stellar API — live reads via backend
+- **Commit**: `c38bf97`
+- **File**: `app/api/stellar/route.ts`
+- Added `get_farmer_profile` action — reads profile from blockchain, returns JSON
+- Added `get_all_listings` action — pulls all live listings from on-chain data
+- Simplified payload structure (removed nested `payload` wrapper)
+
+### 3) Profile page uses backend API
+- **Commit**: `c38bf97`
+- **File**: `app/profile/page.tsx`
+- Profile now fetches from `NEXT_PUBLIC_BACKEND_URL` first, falls back to blockchain
+- Submit profile uses backend POST instead of stellar tx prep
+- ID upload now sends `x-goog-content-length-range` header
+
+### 4) NDVI clamping
+- **Commit**: `14a4a49`
+- **File**: `app/api/verification/run/route.ts`
+- Negative NDVI values are now clamped to 0 before computing buyability
+- Exposes `rawNdviBps` alongside `ndviBps` in response
+
+### 5) Polygon drawing on map
+- **Commit**: `14a4a49`
+- **Files**: `components/ParcelMap.tsx`, `app/explore/ExploreWorkspace.tsx`
+- Added Google Maps Drawing library (`libraries=marker,drawing`)
+- Rectangle/polygon toggle button in explore workspace
+- Polygon vertices display and bbox auto-computed from polygon coords
+- Drawing manager with polygon complete listener
+
+### 6) Render deployment config
+- **Commits**: `5f87233`, `1750098`
+- **Files**: `render.yaml`, `backend/server.js`
+- PostgreSQL database service (`agri-con-db`, free tier v16)
+- Backend service with Prisma build + health check on port 8080
+- Removed frontend from render.yaml (deployed on Vercel)
+- Backend uses `npx prisma db push` + `node start.js` for startup
+
+## Key Env Var Changes
+- `GEMINI_API_KEY` → `NVIDIA_API_KEY`
+- Added `AI_MODEL` (default: `meta/llama-3.3-70b-instruct`)
+- `NEXT_PUBLIC_BACKEND_URL` for backend API routing
+- Google Maps libraries now includes `drawing` in addition to `marker`

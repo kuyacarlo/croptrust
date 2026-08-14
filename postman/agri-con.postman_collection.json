@@ -1,0 +1,422 @@
+{
+  "info": {
+    "name": "CropTrust API",
+    "description": "End-to-end API tests for the CropTrust platform: Next.js route handlers (frontendUrl) and the Express backend (backendUrl). Set the 'CropTrust (Local)' environment before running.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Frontend (Next.js route handlers)",
+      "item": [
+        {
+          "name": "GET /api/price",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test('has numeric xlmUsd', () => pm.expect(j.xlmUsd).to.be.a('number'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{frontendUrl}}/api/price",
+              "host": ["{{frontendUrl}}"],
+              "path": ["api", "price"]
+            }
+          }
+        },
+        {
+          "name": "GET /api/openeo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200 or 500', () => pm.expect([200,500]).to.include(pm.response.code));",
+                  "const j = pm.response.json();",
+                  "pm.test('has ok flag', () => pm.expect(j).to.have.property('ok'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{frontendUrl}}/api/openeo",
+              "host": ["{{frontendUrl}}"],
+              "path": ["api", "openeo"]
+            }
+          }
+        },
+        {
+          "name": "POST /api/verification/run (preview)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responds with JSON ok flag', () => pm.expect(pm.response.json()).to.have.property('ok'));",
+                  "// nftId 0 = preview mode: no on-chain attestation is prepared."
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nftId\": 0,\n  \"bbox\": { \"west\": 120.90, \"south\": 14.40, \"east\": 120.92, \"north\": 14.42 },\n  \"sampleGridSize\": 16,\n  \"minNdviBps\": 3500\n}"
+            },
+            "url": {
+              "raw": "{{frontendUrl}}/api/verification/run",
+              "host": ["{{frontendUrl}}"],
+              "path": ["api", "verification", "run"]
+            }
+          }
+        },
+        {
+          "name": "POST /api/ai/ndvi-summary",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test('has summary', () => pm.expect(j).to.have.property('summary'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ndviBps\": 6200,\n  \"cropType\": \"rice\",\n  \"region\": \"Cavite\"\n}"
+            },
+            "url": {
+              "raw": "{{frontendUrl}}/api/ai/ndvi-summary",
+              "host": ["{{frontendUrl}}"],
+              "path": ["api", "ai", "ndvi-summary"]
+            }
+          }
+        },
+        {
+          "name": "POST /api/ai/chat",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('has reply', () => pm.expect(pm.response.json()).to.have.property('reply'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"messages\": [\n    { \"role\": \"user\", \"content\": \"What does an NDVI of 0.62 mean for my rice crop?\" }\n  ],\n  \"context\": \"marketplace listing review\"\n}"
+            },
+            "url": {
+              "raw": "{{frontendUrl}}/api/ai/chat",
+              "host": ["{{frontendUrl}}"],
+              "path": ["api", "ai", "chat"]
+            }
+          }
+        },
+        {
+          "name": "POST /api/farmer-id/upload-url",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responds with ok flag', () => pm.expect(pm.response.json()).to.have.property('ok'));",
+                  "// Returns 400 if GCP_FARMER_ID_BUCKET is not configured."
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"farmerAddress\": \"{{farmerAddress}}\",\n  \"fileName\": \"national-id.jpg\",\n  \"contentType\": \"image/jpeg\"\n}"
+            },
+            "url": {
+              "raw": "{{frontendUrl}}/api/farmer-id/upload-url",
+              "host": ["{{frontendUrl}}"],
+              "path": ["api", "farmer-id", "upload-url"]
+            }
+          }
+        },
+        {
+          "name": "POST /api/stellar — get_all_listings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('has listings array', () => pm.expect(pm.response.json().listings).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"get_all_listings\"\n}"
+            },
+            "url": {
+              "raw": "{{frontendUrl}}/api/stellar",
+              "host": ["{{frontendUrl}}"],
+              "path": ["api", "stellar"]
+            }
+          }
+        },
+        {
+          "name": "POST /api/stellar — get_farmer_profile",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"get_farmer_profile\",\n  \"farmerAddress\": \"{{farmerAddress}}\"\n}"
+            },
+            "url": {
+              "raw": "{{frontendUrl}}/api/stellar",
+              "host": ["{{frontendUrl}}"],
+              "path": ["api", "stellar"]
+            }
+          }
+        },
+        {
+          "name": "POST /api/stellar — get_treasury_pool",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"get_treasury_pool\"\n}"
+            },
+            "url": {
+              "raw": "{{frontendUrl}}/api/stellar",
+              "host": ["{{frontendUrl}}"],
+              "path": ["api", "stellar"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Backend (Express)",
+      "item": [
+        {
+          "name": "GET /health",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('ok is true', () => pm.expect(pm.response.json().ok).to.eql(true));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{backendUrl}}/health",
+              "host": ["{{backendUrl}}"],
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "POST /api/profile (upsert farmer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('returns profile', () => pm.expect(pm.response.json()).to.have.property('profile'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"address\": \"{{farmerAddress}}\",\n  \"fullName\": \"Test Farmer\",\n  \"farmName\": \"Sunrise Rice Farm\",\n  \"region\": \"Cavite\",\n  \"totalYieldKg\": 5000\n}"
+            },
+            "url": {
+              "raw": "{{backendUrl}}/api/profile",
+              "host": ["{{backendUrl}}"],
+              "path": ["api", "profile"]
+            }
+          }
+        },
+        {
+          "name": "GET /api/profile?address",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{backendUrl}}/api/profile?address={{farmerAddress}}",
+              "host": ["{{backendUrl}}"],
+              "path": ["api", "profile"],
+              "query": [{ "key": "address", "value": "{{farmerAddress}}" }]
+            }
+          }
+        },
+        {
+          "name": "POST /api/listings (upsert listing)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "if (j.listing && j.listing.id) pm.environment.set('listingId', j.listing.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nftId\": {{nftId}},\n  \"cropType\": \"rice\",\n  \"quantityKg\": 5000,\n  \"priceUsdc\": 2500,\n  \"farmerId\": \"{{farmerAddress}}\",\n  \"parcelName\": \"Test Farm\",\n  \"region\": \"Cavite\",\n  \"buyable\": true,\n  \"ndviBps\": 6200,\n  \"minNdviBps\": 3500,\n  \"areaHa\": 1.25\n}"
+            },
+            "url": {
+              "raw": "{{backendUrl}}/api/listings",
+              "host": ["{{backendUrl}}"],
+              "path": ["api", "listings"]
+            }
+          }
+        },
+        {
+          "name": "GET /api/listings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{backendUrl}}/api/listings?buyable=true",
+              "host": ["{{backendUrl}}"],
+              "path": ["api", "listings"],
+              "query": [{ "key": "buyable", "value": "true" }]
+            }
+          }
+        },
+        {
+          "name": "POST /api/orders (create order)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('returns order', () => pm.expect(pm.response.json()).to.have.property('order'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"listingId\": {{listingId}},\n  \"buyerAddress\": \"{{buyerAddress}}\",\n  \"amountUsdc\": 2500,\n  \"status\": \"escrow\"\n}"
+            },
+            "url": {
+              "raw": "{{backendUrl}}/api/orders",
+              "host": ["{{backendUrl}}"],
+              "path": ["api", "orders"]
+            }
+          }
+        },
+        {
+          "name": "GET /api/orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{backendUrl}}/api/orders?buyerAddress={{buyerAddress}}",
+              "host": ["{{backendUrl}}"],
+              "path": ["api", "orders"],
+              "query": [{ "key": "buyerAddress", "value": "{{buyerAddress}}" }]
+            }
+          }
+        },
+        {
+          "name": "POST /api/attestations",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nftId\": {{nftId}},\n  \"observedAt\": 1750000000,\n  \"ndviBps\": 6200,\n  \"minNdviBps\": 3500,\n  \"buyable\": true,\n  \"bboxHash\": \"abc123\",\n  \"reportHash\": \"def456\",\n  \"source\": \"copernicus-sentinel2\"\n}"
+            },
+            "url": {
+              "raw": "{{backendUrl}}/api/attestations",
+              "host": ["{{backendUrl}}"],
+              "path": ["api", "attestations"]
+            }
+          }
+        },
+        {
+          "name": "POST /ai/ndvi-summary",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ndviBps\": 6200,\n  \"cropType\": \"rice\",\n  \"region\": \"Cavite\"\n}"
+            },
+            "url": {
+              "raw": "{{backendUrl}}/ai/ndvi-summary",
+              "host": ["{{backendUrl}}"],
+              "path": ["ai", "ndvi-summary"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

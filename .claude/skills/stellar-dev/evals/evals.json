@@ -1,0 +1,23 @@
+{
+  "skill_name": "stellar-dev",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I need to change the escrow split from 70/20/10 to 60/30/10 — 60% held in escrow until delivery, 30% upfront to farmer, 10% still to treasury. Update the Soroban contract and the TypeScript code, and make sure the split_payment test still passes. Use the existing patterns in lib/stellar/ and contracts/.",
+      "expected_output": "Updated split_payment() in contracts/agri_con/src/lib.rs returns 60/30/10, split test assertion values updated in Cargo.toml test module, and any hardcoded references in frontend/backend TS updated.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I deployed the AgriConContract on testnet but the marketplace shows zero listings even though I've minted 3 NFTs. The contract IDs are correct in .env.example. When I call /api/stellar?action=get_all_listings I get an empty array. What's likely wrong and how do I fix it?",
+      "expected_output": "Diagnosis that ORACLE_ADDRESS/TREASURY_ADDRESS is not set, causing simulateTransaction read queries to fail silently. Should point to the exact code path in live-data.ts getProbeAddress() and explain why it needs a funded account. Should show the fix: set ORACLE_ADDRESS or TREASURY_ADDRESS env var.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I want to add a new read-only method to the AgriConContract that returns the total number of NFTs minted so far (the NextId - 1). I need this for a stats widget on the marketplace page. Walk me through exactly what to change in the contract, the TypeScript, and the API route.",
+      "expected_output": "Step-by-step: add get_total_minted() to contracts/agri_con/src/lib.rs returning u64 (NextId - 1), add readContract() call in lib/stellar/live-data.ts, add action case in app/api/stellar/route.ts for get_total_minted, wire it to a React component. Should not require auth since it's read-only.",
+      "files": []
+    }
+  ]
+}

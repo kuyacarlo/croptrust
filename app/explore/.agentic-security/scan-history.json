@@ -1,0 +1,90 @@
+[
+  {
+    "timestamp": "2026-06-13T05:47:31.628Z",
+    "label": "scan",
+    "total": 0,
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "kev": 0,
+    "ids": []
+  },
+  {
+    "timestamp": "2026-06-13T06:04:29.927Z",
+    "label": "scan",
+    "total": 0,
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "kev": 0,
+    "ids": []
+  },
+  {
+    "timestamp": "2026-06-13T06:16:29.441Z",
+    "label": "scan",
+    "total": 0,
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "kev": 0,
+    "ids": []
+  },
+  {
+    "timestamp": "2026-06-13T06:22:19.213Z",
+    "label": "scan",
+    "total": 0,
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "kev": 0,
+    "ids": []
+  },
+  {
+    "timestamp": "2026-06-13T06:23:22.652Z",
+    "label": "scan",
+    "total": 0,
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "kev": 0,
+    "ids": []
+  },
+  {
+    "timestamp": "2026-06-13T06:25:53.840Z",
+    "label": "scan",
+    "total": 0,
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "kev": 0,
+    "ids": []
+  },
+  {
+    "timestamp": "2026-06-13T06:27:26.580Z",
+    "label": "scan",
+    "total": 0,
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "kev": 0,
+    "ids": []
+  },
+  {
+    "timestamp": "2026-06-13T06:30:44.598Z",
+    "label": "scan",
+    "total": 0,
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "kev": 0,
+    "ids": []
+  }
+]

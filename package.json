@@ -1,0 +1,61 @@
+{
+  "name": "agri-con",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "NODE_OPTIONS=--dns-result-order=ipv4first next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "@creit.tech/stellar-wallets-kit": "^2.2.0",
+    "@google-cloud/storage": "^7.19.0",
+    "@google/generative-ai": "^0.24.1",
+    "@gsap/react": "^2.1.2",
+    "@neondatabase/serverless": "^0.10.4",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "@stellar/stellar-sdk": "^13.3.0",
+    "@supabase/supabase-js": "^2.45.0",
+    "@tanstack/react-query": "^5.101.1",
+    "@types/leaflet": "^1.9.21",
+    "ecc-universal": "^2.0.0",
+    "gsap": "^3.15.0",
+    "leaflet": "^1.9.4",
+    "lucide-react": "^1.16.0",
+    "next": "16.2.6",
+    "opencode-ponytail": "^4.7.3",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "stellar-agent-kit": "^1.0.6",
+    "three": "^0.184.0",
+    "x402-stellar-sdk": "^1.0.5"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20.19.41",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.6",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  },
+  "allowScripts": {
+    "@reown/appkit@1.8.19": true,
+    "@stellar/stellar-sdk@14.2.0": true,
+    "protobufjs@7.4.0": true,
+    "protobufjs@7.5.5": true,
+    "blake-hash@2.0.0": true,
+    "bufferutil@4.1.0": true,
+    "secp256k1@5.0.1": true,
+    "sharp@0.34.5": true,
+    "tiny-secp256k1@1.1.7": true,
+    "usb@2.18.0": true,
+    "utf-8-validate@6.0.6": true,
+    "ecc-universal@2.0.0": true
+  }
+}

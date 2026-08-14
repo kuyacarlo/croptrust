@@ -1,0 +1,837 @@
+{
+  "scanId": "ab98ca62-3eeb-41eb-b8b9-37857c79594d",
+  "startedAt": "2026-06-13T07:47:39.335Z",
+  "durationMs": 2099,
+  "scanned": {
+    "files": 26,
+    "lines": 0
+  },
+  "findings": [
+    {
+      "id": "497cb98f0282ff14",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Timeout on Outbound HTTP Request (DoS)",
+      "cwe": "CWE-400",
+      "stride": "Denial of Service",
+      "file": "ClaimAid.tsx",
+      "line": 26,
+      "snippet": "const res = await fetch(\"/api/stellar\", {",
+      "fix": {
+        "description": "Set a timeout on all outbound requests to prevent event-loop starvation from stalled upstreams.",
+        "code": "// fetch (Node 18+)\nconst resp = await fetch(url, { signal: AbortSignal.timeout(5000) });\n\n// axios\nawait axios.get(url, { timeout: 5000 });\n\n// node http\nconst req = http.get(url, cb);\nreq.setTimeout(5000, () => req.destroy());"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage",
+        "confidence": "low",
+        "narrative": "Missing Timeout on Outbound HTTP Request (DoS) on `ClaimAid.tsx:26` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "c9a0b9958d99ca6a",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Timeout on Outbound HTTP Request (DoS)",
+      "cwe": "CWE-400",
+      "stride": "Denial of Service",
+      "file": "FloatingAIButton.tsx",
+      "line": 56,
+      "snippet": "const res = await fetch(\"/api/ai/chat\", {",
+      "fix": {
+        "description": "Set a timeout on all outbound requests to prevent event-loop starvation from stalled upstreams.",
+        "code": "// fetch (Node 18+)\nconst resp = await fetch(url, { signal: AbortSignal.timeout(5000) });\n\n// axios\nawait axios.get(url, { timeout: 5000 });\n\n// node http\nconst req = http.get(url, cb);\nreq.setTimeout(5000, () => req.destroy());"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage",
+        "confidence": "low",
+        "narrative": "Missing Timeout on Outbound HTTP Request (DoS) on `FloatingAIButton.tsx:56` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "c8cabeaf7aefa5ef",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Timeout on Outbound HTTP Request (DoS)",
+      "cwe": "CWE-400",
+      "stride": "Denial of Service",
+      "file": "LiquityPool.tsx",
+      "line": 12,
+      "snippet": "const res = await fetch(\"/api/stellar\", {",
+      "fix": {
+        "description": "Set a timeout on all outbound requests to prevent event-loop starvation from stalled upstreams.",
+        "code": "// fetch (Node 18+)\nconst resp = await fetch(url, { signal: AbortSignal.timeout(5000) });\n\n// axios\nawait axios.get(url, { timeout: 5000 });\n\n// node http\nconst req = http.get(url, cb);\nreq.setTimeout(5000, () => req.destroy());"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage",
+        "confidence": "low",
+        "narrative": "Missing Timeout on Outbound HTTP Request (DoS) on `LiquityPool.tsx:12` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "4e320d4229afba86",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Timeout on Outbound HTTP Request (DoS)",
+      "cwe": "CWE-400",
+      "stride": "Denial of Service",
+      "file": "SatelliteVerificationPanel.tsx",
+      "line": 95,
+      "snippet": "const res = await fetch(\"/api/ai/ndvi-summary\", {",
+      "fix": {
+        "description": "Set a timeout on all outbound requests to prevent event-loop starvation from stalled upstreams.",
+        "code": "// fetch (Node 18+)\nconst resp = await fetch(url, { signal: AbortSignal.timeout(5000) });\n\n// axios\nawait axios.get(url, { timeout: 5000 });\n\n// node http\nconst req = http.get(url, cb);\nreq.setTimeout(5000, () => req.destroy());"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage",
+        "confidence": "low",
+        "narrative": "Missing Timeout on Outbound HTTP Request (DoS) on `SatelliteVerificationPanel.tsx:95` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "40ca687b06c22d4f",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Missing Timeout on Outbound HTTP Request (DoS)",
+      "cwe": "CWE-400",
+      "stride": "Denial of Service",
+      "file": "SatelliteVerificationPanel.tsx",
+      "line": 123,
+      "snippet": "const res = await fetch(\"/api/verification/run\", {",
+      "fix": {
+        "description": "Set a timeout on all outbound requests to prevent event-loop starvation from stalled upstreams.",
+        "code": "// fetch (Node 18+)\nconst resp = await fetch(url, { signal: AbortSignal.timeout(5000) });\n\n// axios\nawait axios.get(url, { timeout: 5000 });\n\n// node http\nconst req = http.get(url, cb);\nreq.setTimeout(5000, () => req.destroy());"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage",
+        "confidence": "low",
+        "narrative": "Missing Timeout on Outbound HTTP Request (DoS) on `SatelliteVerificationPanel.tsx:123` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Air Canada 2024 LLM chatbot DoS → court-ordered refunds + reputational damage."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "8b8b87d0f5d912df",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Weak Randomness",
+      "cwe": "CWE-330",
+      "stride": "Spoofing",
+      "file": "ThreeGlobe.tsx",
+      "line": 148,
+      "snippet": "const theta = Math.random() * Math.PI * 2;",
+      "fix": {
+        "description": "Use crypto.randomBytes or crypto.randomUUID for security-sensitive values.",
+        "code": "// BEFORE\nconst token = Math.random().toString(36);\n\n// AFTER\nconst token = crypto.randomBytes(32).toString('hex');"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Generic finding — likely cost driven by user count + jurisdiction stack",
+        "confidence": "low",
+        "narrative": "Weak Randomness on `ThreeGlobe.tsx:148` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Generic finding — likely cost driven by user count + jurisdiction stack."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "ea372749ec648340",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Weak Randomness",
+      "cwe": "CWE-330",
+      "stride": "Spoofing",
+      "file": "ThreeGlobe.tsx",
+      "line": 149,
+      "snippet": "const phi = Math.acos(2 * Math.random() - 1);",
+      "fix": {
+        "description": "Use crypto.randomBytes or crypto.randomUUID for security-sensitive values.",
+        "code": "// BEFORE\nconst token = Math.random().toString(36);\n\n// AFTER\nconst token = crypto.randomBytes(32).toString('hex');"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Generic finding — likely cost driven by user count + jurisdiction stack",
+        "confidence": "low",
+        "narrative": "Weak Randomness on `ThreeGlobe.tsx:149` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Generic finding — likely cost driven by user count + jurisdiction stack."
+      },
+      "parser": "LOGIC",
+      "family": null
+    },
+    {
+      "id": "18ff1ce74851dc54",
+      "kind": "logic",
+      "severity": "medium",
+      "vuln": "Weak Randomness",
+      "cwe": "CWE-330",
+      "stride": "Spoofing",
+      "file": "ThreeGlobe.tsx",
+      "line": 150,
+      "snippet": "const r = 6 + Math.random() * 4;",
+      "fix": {
+        "description": "Use crypto.randomBytes or crypto.randomUUID for security-sensitive values.",
+        "code": "// BEFORE\nconst token = Math.random().toString(36);\n\n// AFTER\nconst token = crypto.randomBytes(32).toString('hex');"
+      },
+      "blastRadius": {
+        "scope": "all-users",
+        "dataAtRisk": [
+          "config"
+        ],
+        "userCount": 50,
+        "industry": "generic",
+        "jurisdictions": [],
+        "controlsApplied": [],
+        "dollarBest": 23250,
+        "dollarLikely": 136250,
+        "dollarWorst": 775000,
+        "dollarLow": 23250,
+        "dollarHigh": 775000,
+        "components": {
+          "incidentResponse": {
+            "low": 8000,
+            "likely": 50000,
+            "high": 250000
+          },
+          "legal": {
+            "low": 10000,
+            "likely": 75000,
+            "high": 500000
+          },
+          "crisisPR": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "notification": {
+            "low": 5000,
+            "likely": 10000,
+            "high": 15000
+          },
+          "creditMonitoring": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "regulatoryFines": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "directDamage": {
+            "low": 250,
+            "likely": 1250,
+            "high": 10000
+          },
+          "classAction": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          },
+          "lostBusiness": {
+            "low": 0,
+            "likely": 0,
+            "high": 0
+          }
+        },
+        "dominantDriver": "legal counsel",
+        "comparable": "Generic finding — likely cost driven by user count + jurisdiction stack",
+        "confidence": "low",
+        "narrative": "Weak Randomness on `ThreeGlobe.tsx:150` could expose configuration / internal data. Context: general SaaS / no specific regulatory exposure. Estimated cost: best $23k · likely $136k · worst $775k. Dominant driver: legal counsel. Comparable: Generic finding — likely cost driven by user count + jurisdiction stack."
+      },
+      "parser": "LOGIC",
+      "family": null
+    }
+  ],
+  "bundles": [],
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/api/ai/ndvi-summary",
+      "framework": "API",
+      "file": "CheckOutComponent.tsx",
+      "line": 35,
+      "hasAuth": false,
+      "hasFileUpload": false,
+      "params": [],
+      "classifications": [],
+      "classifiedFields": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/stellar",
+      "framework": "API",
+      "file": "ClaimAid.tsx",
+      "line": 26,
+      "hasAuth": false,
+      "hasFileUpload": false,
+      "params": [],
+      "classifications": [],
+      "classifiedFields": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/ai/chat",
+      "framework": "API",
+      "file": "FloatingAIButton.tsx",
+      "line": 56,
+      "hasAuth": false,
+      "hasFileUpload": false,
+      "params": [],
+      "classifications": [],
+      "classifiedFields": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/stellar",
+      "framework": "API",
+      "file": "LiquityPool.tsx",
+      "line": 12,
+      "hasAuth": false,
+      "hasFileUpload": false,
+      "params": [],
+      "classifications": [],
+      "classifiedFields": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/ai/ndvi-summary",
+      "framework": "API",
+      "file": "SatelliteVerificationPanel.tsx",
+      "line": 95,
+      "hasAuth": false,
+      "hasFileUpload": false,
+      "params": [],
+      "classifications": [],
+      "classifiedFields": {}
+    },
+    {
+      "method": "GET",
+      "path": "/api/verification/run",
+      "framework": "API",
+      "file": "SatelliteVerificationPanel.tsx",
+      "line": 123,
+      "hasAuth": false,
+      "hasFileUpload": false,
+      "params": [],
+      "classifications": [],
+      "classifiedFields": {}
+    }
+  ],
+  "components": [],
+  "suppressedCount": 2,
+  "blastRadiusSignals": {
+    "industry": "generic",
+    "industryConfidence": "low",
+    "jurisdictions": [],
+    "controls": [],
+    "estimatedUsers": 50,
+    "revenueIndicator": "pre-revenue",
+    "hasStripe": false,
+    "hasAuth": false,
+    "hasUserTable": false,
+    "hasPII": false,
+    "hasPHI": false,
+    "hasS3": false
+  },
+  "_v3": {
+    "counterfactual": {
+      "spofControls": [],
+      "controlsDetected": 236
+    },
+    "threatModel": {
+      "summary": {
+        "assetCount": 1,
+        "boundaryCount": 0,
+        "strideCounts": {
+          "spoofing": 0,
+          "tampering": 0,
+          "repudiation": 0,
+          "informationDisclosure": 0,
+          "denialOfService": 0,
+          "elevationOfPrivilege": 0
+        }
+      },
+      "assets": [
+        {
+          "name": "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY",
+          "file": "ParcelMap.tsx",
+          "line": 97,
+          "category": "secret",
+          "exposure": "internal"
+        }
+      ],
+      "trustBoundaries": [],
+      "stride": {
+        "spoofing": [],
+        "tampering": [],
+        "repudiation": [],
+        "informationDisclosure": [],
+        "denialOfService": [],
+        "elevationOfPrivilege": []
+      }
+    },
+    "trustBoundaryDiagram": {
+      "mermaid": "flowchart LR\n  INTERNET((Internet))\n  APP[\"Application\"]\n  asset_secret_NEXT_PUBLIC_GOOGLE_MAPS_API_KEY[/\"secret: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY\"/]\n  APP -->|asset| asset_secret_NEXT_PUBLIC_GOOGLE_MAPS_API_KEY\n  classDef sev_critical fill:#ffcccc,stroke:#a00,stroke-width:2px;\n  classDef sev_high fill:#ffe0b2,stroke:#c60,stroke-width:2px;\n  classDef sev_medium fill:#fff3cd,stroke:#a80;\n  classDef sev_low fill:#e8eaf6,stroke:#557;",
+      "nodes": [
+        {
+          "id": "INTERNET",
+          "kind": "external",
+          "label": "Internet"
+        },
+        {
+          "id": "APP",
+          "kind": "app",
+          "label": "Application"
+        },
+        {
+          "id": "asset_secret_NEXT_PUBLIC_GOOGLE_MAPS_API_KEY",
+          "kind": "asset",
+          "label": "secret: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY"
+        }
+      ],
+      "edges": [
+        {
+          "from": "APP",
+          "to": "asset_secret_NEXT_PUBLIC_GOOGLE_MAPS_API_KEY",
+          "kind": "asset"
+        }
+      ],
+      "decorations": []
+    },
+    "calibrationDrift": {
+      "alarms": [],
+      "note": "no-feedback-data"
+    }
+  },
+  "annotatorErrors": []
+}

@@ -1,0 +1,6 @@
+databases:
+  - name: agri-con-db
+    databaseName: agri_con
+    plan: free
+    postgresMajorVersion: "16"
+    ipAllowList: []

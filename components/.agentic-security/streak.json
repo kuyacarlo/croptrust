@@ -1,0 +1,22 @@
+{
+  "firstScanDate": "2026-06-13T04:46:52.984Z",
+  "lastScanDate": "2026-06-13T07:47:41.630Z",
+  "totalScans": 16,
+  "daysCleanCritical": 1,
+  "lastCleanDate": "2026-06-13",
+  "lastCriticalDate": null,
+  "hasEverHadCritical": false,
+  "bestDaysCleanCritical": 1,
+  "totalFindingsAtFirstScan": 15,
+  "totalFindingsAtLastScan": 8,
+  "totalFixesInferred": 7,
+  "lastGrade": "A",
+  "bestGrade": "A",
+  "launchCheckPassedAt": null,
+  "achievements": [
+    "first-fix",
+    "first-scan",
+    "grade-a"
+  ],
+  "previousGrade": "A"
+}
