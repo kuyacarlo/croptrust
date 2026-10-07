@@ -191,3 +191,7 @@ Tests target `https://agri-con-one.vercel.app` by default. Set `PLAYWRIGHT_BASE_
 ## License
 
 MIT
+
+## Local finalization note
+
+This isolated copy preserves the hackathon deliverable for review/archive. Verified locally: Node contract/RPC tests pass against Stellar testnet; the deployed contract ID is documented above. Not run locally: Vercel deploy, secret-backed admin calls, and full UI build without a dependency install.
